@@ -14,4 +14,4 @@
 {{ $bootstrapCss := resources.Get "css/bootstrap.min.css" }}
 {{ $siteCss := resources.Get "css/site.css" }}
 {{ $style := slice $bootstrapCss $siteCss | resources.Concat "css/all.css" | resources.Minify | resources.Fingerprint "sha512" }}
-<link rel="stylesheet" href="{{ $style.Permalink }}" integrity="{{ $style.Data.Integrity }}">
+<link rel="stylesheet" href="{{ $style.Permalink | relURL }}" integrity="{{ $style.Data.Integrity }}">
