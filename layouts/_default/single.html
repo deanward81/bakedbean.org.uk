@@ -1,0 +1,11 @@
+{{ define "main" }}
+    <h1>{{ .Title }}</h1>
+    {{ if not .Date.IsZero }}
+    <h4>Published: {{ dateFormat "2006-02-01 15:04:05Z" .Date }}</h4>
+    {{ end }}
+    <article>
+        {{ .Content }}
+    </article>
+
+    {{ template "_internal/disqus.html" . }}
+{{ end }}

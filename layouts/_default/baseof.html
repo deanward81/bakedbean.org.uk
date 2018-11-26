@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+
+<head>
+    {{ partial "head.html" . }}
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-md">
+        {{ with .Site.Menus.main }}
+        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+            <ul class="navbar-nav mr-auto">
+                {{ range . }}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ .URL }}">{{ .Name }}</a>
+                </li>
+                {{ end }}
+            </ul>
+        </div>
+        {{ end }}
+        <div class="mx-auto order-0">
+            <a class="navbar-brand mx-auth" href="#">{{ .Site.Title }} - {{ .Site.Params.TagLine }}</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        {{ with .Site.Params.social }}
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ml-auto">
+                {{ range . }}
+                <li class="nav-item">
+                    <a href="{{ .url }}" class="nav-link">
+                        <i class="{{ .icon }}"></i>
+                    </a>
+                </li>
+                {{ end }}
+            </ul>
+        </div>
+        {{ end }}
+    </nav>
+    <div class="page-container container-fluid">
+        <div class="row">
+            <div class="col-md-3 menu">
+                {{ partial "menu.html" . }}
+            </div>
+            <div class="col-md-9 content">
+                {{ block "main" . }}
+                {{ end }}
+            </div>
+        </div>
+    </div>
+    {{ template "_internal/google_analytics_async.html" . }}
+</body>
+</html>

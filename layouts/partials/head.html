@@ -1,0 +1,17 @@
+<base href="/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="author" content="{{ with .Site.Params.author }}{{ . }}{{ end }}">
+{{ if isset . "Description" }}
+<meta name="description" content="{{ .Description }}">
+{{ else }}
+<meta name="description" content="{{ with .Site.Params.description }}{{ . }}{{ end }}">
+{{ end }}
+<title>Bakedbean.org.uk {{ with .Title }} - {{ . }}{{ end }}</title>
+{{ .Hugo.Generator }}
+<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+{{ $bootstrapCss := resources.Get "css/bootstrap.min.css" }}
+{{ $siteCss := resources.Get "css/site.css" }}
+{{ $style := slice $bootstrapCss $siteCss | resources.Concat "css/all.css" | resources.Minify | resources.Fingerprint "sha512" }}
+<link rel="stylesheet" href="{{ $style.Permalink }}" integrity="{{ $style.Data.Integrity }}">

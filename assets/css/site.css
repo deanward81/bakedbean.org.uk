@@ -1,0 +1,32 @@
+html {
+    font-size: 14px;
+}
+
+body {
+    font-family: 'Source Code Pro';
+}
+
+.navbar-brand {
+    padding: 0 15px 0 0;
+    font-size: 1.3rem;
+}
+
+.content {
+    background-color: #002b36;
+    padding-top: 20px;
+    height: 100vh;
+}
+
+.menu {
+    background-color: #001f27;
+    padding-top: 20px;
+    padding-left: 0;
+}
+
+.menu nav {
+    background-color: #001f27;
+    position: fixed;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
