@@ -30,3 +30,16 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
 }
+
+.navbar .social {
+    display: inline-block;
+    min-width: 100px;
+}
+.navbar .social .nav-item {
+    display: inline-block;
+    width: 50px;
+}
+
+.articles-list article {
+    padding-bottom: 10px;
+}

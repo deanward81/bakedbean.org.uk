@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
-
 <head>
     {{ partial "head.html" . }}
 </head>
-
 <body>
-
     <nav class="navbar navbar-expand-md">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+            <i class="fas fa-bars"></i>
+        </button>
         {{ with .Site.Menus.main }}
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
             <ul class="navbar-nav mr-auto">
@@ -21,13 +21,10 @@
         {{ end }}
         <div class="mx-auto order-0">
             <a class="navbar-brand mx-auth" href="#">{{ .Site.Title }} - {{ .Site.Params.TagLine }}</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
-                <span class="navbar-toggler-icon"></span>
-            </button>
         </div>
         {{ with .Site.Params.social }}
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ml-auto social">
                 {{ range . }}
                 <li class="nav-item">
                     <a href="{{ .url }}" class="nav-link">
@@ -50,6 +47,6 @@
             </div>
         </div>
     </div>
-    {{ template "_internal/google_analytics_async.html" . }}
+    {{ partial "scripts.html" }}
 </body>
 </html>
