@@ -11,4 +11,4 @@ command = "npm i -g postcss-cli && npm i && hugo --gc --minify"
 command = "npm i -g postcss-cli && npm i && hugo  --gc --minify --buildFuture -b $DEPLOY_PRIME_URL"
 
 [context.deploy-preview.environment]
-HUGO_VERSION = "0.51"
+  HUGO_VERSION = "0.51"
