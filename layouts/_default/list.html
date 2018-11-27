@@ -1,5 +1,5 @@
 {{ define "main" }}
-    {{ $paginator := .Paginate .Data.Pages.ByPublishDate }}
+    {{ $paginator := .Paginate .Data.Pages.ByPublishDate.Reverse }}
     <div class="articles-list">
         {{ range $paginator.Pages }}
         {{ partial "summary" . }}
