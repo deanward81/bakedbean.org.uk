@@ -5,11 +5,8 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-md">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
-            <i class="fas fa-bars"></i>
-        </button>
         {{ with .Site.Menus.main }}
-        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <div class="navbar-collapse collapse w-100 order-1 order-md-0 collapsible">
             <ul class="navbar-nav mr-auto">
                 {{ range . }}
                 <li class="nav-item">
@@ -19,11 +16,14 @@
             </ul>
         </div>
         {{ end }}
-        <div class="mx-auto order-0">
-            <a class="navbar-brand mx-auth" href="#">{{ .Site.Title }} - {{ .Site.Params.TagLine }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".collapsible">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="mx-auto order-0 text-truncate">
+            <a class="navbar-brand mx-auth" href="/">{{ .Site.Title }} - {{ .Site.Params.TagLine }}</a>
         </div>
         {{ with .Site.Params.social }}
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <div class="navbar-collapse collapse w-100 order-3 collapsible">
             <ul class="navbar-nav ml-auto social">
                 {{ range . }}
                 <li class="nav-item">

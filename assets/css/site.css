@@ -55,11 +55,8 @@ body {
 }
 
 @media(max-width:768px) {
-    .navbar {
-        flex-wrap: nowrap;
-    }
     .navbar-brand {
-        padding-left: 10px;
+        padding: 10px 0 10px 10px;
     }
     .menu {
         display: none;
