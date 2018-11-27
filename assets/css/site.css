@@ -6,6 +6,11 @@ body {
     font-family: 'Source Code Pro';
 }
 
+.navbar-toggler {
+    border-color: white !important;
+    color: white;
+}
+
 .navbar-brand {
     padding: 0 15px 0 0;
     font-size: 1.3rem;
@@ -14,7 +19,7 @@ body {
 .content {
     background-color: #002b36;
     padding-top: 20px;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .menu {
@@ -25,8 +30,8 @@ body {
 
 .menu nav {
     background-color: #001f27;
-    position: fixed;
-    height: 100vh;
+    min-height: 100vh;
+    padding-left: 10px;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -35,6 +40,7 @@ body {
     display: inline-block;
     min-width: 100px;
 }
+
 .navbar .social .nav-item {
     display: inline-block;
     width: 50px;
@@ -42,4 +48,20 @@ body {
 
 .articles-list article {
     padding-bottom: 10px;
+}
+
+.highlight {
+    padding-bottom: 10px;
+}
+
+@media(max-width:768px) {
+    .navbar {
+        flex-wrap: nowrap;
+    }
+    .navbar-brand {
+        padding-left: 10px;
+    }
+    .menu {
+        display: none;
+    }
 }
