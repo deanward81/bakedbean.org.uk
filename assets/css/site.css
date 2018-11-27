@@ -54,16 +54,19 @@ body {
     padding-bottom: 10px;
 }
 
-@media(max-width:768px) {
+@media(max-width: 475px) {
+    .navbar-brand > span {
+        display: none;
+    }
+}
+
+@media(max-width: 767px) {
     .navbar-brand {
         padding: 10px 0 10px 10px;
     }
-    .navbar-title {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+
     .menu {
         display: none;
     }
+
 }
