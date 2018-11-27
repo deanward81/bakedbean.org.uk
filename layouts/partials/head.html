@@ -9,8 +9,11 @@
 {{ end }}
 <title>Bakedbean.org.uk {{ with .Title }} - {{ . }}{{ end }}</title>
 {{ .Hugo.Generator }}
+<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 {{ $bootstrapCss := resources.Get "css/bootstrap.min.css" }}
 {{ $iconCss := resources.Get "css/icons.css" }}
 {{ $siteCss := resources.Get "css/site.css" }}
-{{ $style := slice $bootstrapCss $iconCss $siteCss | resources.Concat "css/all.css" | resources.PostCSS (dict "noMap" true) | resources.Minify | resources.Fingerprint "sha512"}}
+{{ $syntaxCss := resources.Get "css/syntax.css" }}
+{{ $style := slice $bootstrapCss $iconCss $siteCss $syntaxCss | resources.Concat "css/all.css" | resources.PostCSS (dict "noMap" true) | resources.Minify | resources.Fingerprint "sha512"}}
 <link rel="stylesheet" href="{{ $style.Permalink | relURL }}" integrity="{{ $style.Data.Integrity }}">
