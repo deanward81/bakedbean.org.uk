@@ -58,6 +58,11 @@ body {
     .navbar-brand {
         padding: 10px 0 10px 10px;
     }
+    .navbar-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     .menu {
         display: none;
     }
