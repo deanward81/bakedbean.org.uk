@@ -10,6 +10,7 @@
 <title>Bakedbean.org.uk {{ with .Title }} - {{ . }}{{ end }}</title>
 {{ .Hugo.Generator }}
 {{ $bootstrapCss := resources.Get "css/bootstrap.min.css" }}
+{{ $iconCss := resources.Get "css/icons.css" }}
 {{ $siteCss := resources.Get "css/site.css" }}
-{{ $style := slice $bootstrapCss $siteCss | resources.Concat "css/all.css" | resources.PostCSS (dict "noMap" true) | resources.Minify | resources.Fingerprint "sha512"}}
+{{ $style := slice $bootstrapCss $iconCss $siteCss | resources.Concat "css/all.css" | resources.PostCSS (dict "noMap" true) | resources.Fingerprint "sha512"}}
 <link rel="stylesheet" href="{{ $style.Permalink | relURL }}" integrity="{{ $style.Data.Integrity }}">
