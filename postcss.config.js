@@ -5,10 +5,6 @@ module.exports = {
     plugins: [
         purgecss({
             content: ['./**/*.html', './config.toml']
-        }),
-        url({
-            url: 'inline',
-            basePath: ['./assets/css']
         })
     ]
 }
