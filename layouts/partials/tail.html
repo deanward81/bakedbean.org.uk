@@ -1,4 +1,4 @@
-{{ $bootstrapJs := resources.Get "js/bootstrap-native-v4.min.js" }}
+{{ $bootstrapJs := resources.Get "js/bootstrap-native-v4.js" }}
 {{ $js := slice $bootstrapJs | resources.Concat "js/all.js" | resources.Minify | resources.Fingerprint "sha512"}}
 <script async src="{{ $js.Permalink | relURL }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
 {{ template "_internal/google_analytics_async.html" . }}
