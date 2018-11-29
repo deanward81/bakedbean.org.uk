@@ -1,5 +1,5 @@
 {{ $bootstrapJs := resources.Get "js/bootstrap-native-v4.min.js" }}
 {{ $js := slice $bootstrapJs | resources.Concat "js/all.js" | resources.Minify | resources.Fingerprint "sha512"}}
-<script src="{{ $js.Permalink | relURL }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
+<script async src="{{ $js.Permalink | relURL }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
 {{ template "_internal/google_analytics_async.html" . }}
 <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700" rel="stylesheet" type="text/css">
