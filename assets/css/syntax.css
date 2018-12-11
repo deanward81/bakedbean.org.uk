@@ -1,3 +1,4 @@
+/* purgecss start ignore */
 /* Background */ .chroma { color: #d0d0d0; background-color: #202020 }
 /* Error */ .chroma .err { color: #a61717; background-color: #e3d2d2 }
 /* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
@@ -63,3 +64,4 @@
 /* GenericTraceback */ .chroma .gt { color: #d22323 }
 /* GenericUnderline */ .chroma .gl { text-decoration: underline }
 /* TextWhitespace */ .chroma .w { color: #666666 }
+/* purgecss end ignore */
