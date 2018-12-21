@@ -80,7 +80,7 @@ public class Startup
 
 This uses the configuration subsystem to compose the options using anything from a JSON file to a SQL Server or a secure storage mechanism for things like secrets.
 
-Ideally we'd like using NFig to be as "native" as possible, so, our first task is to make sure settings provided by NFig can be resolved as `IOptions` implementations. We can do that in our application startup:
+Ideally we'd like using NFig to be as "native" as possible, so, our first task is to make sure settings provided by NFig can be resolved as `IOptions` implementations and to configure the backing store for NFig. We can do that in our application startup:
 
 ```c#
 public enum Tier
@@ -108,7 +108,25 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        // add services needed by NFig
+        // this includes adding the IOptions implementations
         services.AddNFig<Settings, Tier, DataCenter>();
+    }
+
+    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    {
+        // configure NFig's backing store
+        app
+            .UseNFig<Settings, Tier, DataCenter>(
+                (cfg, builder) =>
+                {
+                    var settings = cfg.Get<AppSettings>();
+                    var connectionString = cfg.GetConnectionString("Redis");
+
+                    // connects NFig to Redis
+                    builder.UseRedis(settings.ApplicationName, settings.Tier, settings.DataCenter, connectionString);
+                }
+            );
     }
 }
 ```
@@ -148,7 +166,8 @@ We've also added middleware that handles the rendering of the NFig UI views. Thi
 ```c#
 public class SettingsController
 {
-    [Authorize("Admins")]
+    // restrict this route to users in the Admins role
+    [Authorize(Roles = "Admins")]
     [Route("settings/{*pathInfo}")]
     public Task Settings() => NFigMiddleware<Settings, Tier, DataCenter>.HandleRequestAsync(HttpContext);
 }
@@ -161,9 +180,12 @@ public class Startup
 {
     // ... other startup bits here
 
-    public void Configure(IAppBuilder appBuilder, IHostingEnvironment hostingEnvironment)
+    public void Configure(IAppBuilder app, IHostingEnvironment env)
     {
-        appBuilder.Use();
+        app.MapWhen(
+            ctx => ctx.Request.Path.StartsWithSegments("/settings"),
+            appBuilder => appBuilder.Run(NFigMiddleware<Settings, Tier, DataCenter>.HandleRequestAsync)
+        );
     }
 }
 ```
@@ -226,7 +248,7 @@ public class Startup
             .Configure(
                 s => 
                 {
-                    var databaseSettings = _configuration.Get<DatabaseSettings>("Database");
+                    var databaseSettings = _configuration.GetSection("Database").Get<DatabaseSettings>();
 
                     s.Username = databaseSettings.Username;
                     s.Password = databaseSettings.Password;
@@ -237,7 +259,16 @@ public class Startup
 
 ## Some Implementation Details
 
-You might be asking why we didn't implement .NET Core's `IConfigurationSource` and `IConfigurationProvider` interfaces and integrate at a lower level into the configuration subsystem...
+You might be asking why we didn't implement .NET Core's `IConfigurationSource` and `IConfigurationProvider` interfaces and integrate at a lower level into the configuration subsystem... We explicitly decided not to do so because NFig manages the lifetime and persistence itself. If we implemented the configuration interfaces we'd need to expose our configuration values as an `IDictionary<string, string>` and allow .NET Core to manage the binding of those values to strongly-typed classes. NFig does all of this for us:
+
+ - it instantiates the settings classes and re-creates them whenever they change
+ - it marshals configuration values from strings to their actual types and back again
+ 
+ In short, we really don't need to hook into the framework at such a low-level and hooking into `IOptions` is sufficient for our needs. That said, we've had to make some adjustments to how the Options framework works by default.
+
+ ## Summary
+ 
+ We've successfully integrated NFig into our .NET Core applications
 
 [NFig List]: /img/nfig-and-netcore-1.png "NFig List View"
 [NFig Setting]: /img/nfig-and-netcore-2.png "NFig Setting View"
