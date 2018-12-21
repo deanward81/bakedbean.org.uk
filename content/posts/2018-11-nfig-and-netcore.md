@@ -1,6 +1,7 @@
 ---
 title: "Integrating NFig with .NET Core"
 date: 2018-11-29T00:00:00Z
+tags: .net, 
 draft: true
 ---
 Over the past few weeks we've been busy laying the groundwork needed to support migrating Stack Overflow to [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-2.1).
@@ -58,7 +59,7 @@ This is great and works extremely well - it allows us to do things like deploy f
 
 ## .NET Core & NFig
 
-.NET Core comes with its own set of APIs (known as the [`Options` pattern](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-2.1)) for providing upto date configuration settings. An `IOptions` implementation is configured based upon code such as this in an application's startup:
+.NET Core comes with its own set of APIs (known as the [`Options` pattern](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-2.2)) for providing upto date configuration settings. An `IOptions` implementation is configured based upon code like this in an application's startup:
 
 ```c#
 public class Startup
@@ -112,7 +113,7 @@ public class Startup
 }
 ```
 
-You'll notice that we've specified a concrete type for our settings (`Settings`) and also enum types for the `Tier` and `DataCentre`. The latter two allow our application to specify different settings per data centre and tier.
+You'll notice that we've specified a concrete type for our settings (`Settings` from before) and also enum types for the `Tier` and `DataCentre`. The latter two allow our application to specify different settings per data centre and tier.
 
 Now, instead of using a static reference to `Settings.FeatureFlags.EnableWhizzbang`, we can inject an `IOptions<FeatureFlagSettings>` into our consuming class:
 
@@ -140,7 +141,20 @@ public class HomeController : Controller
 
 ## Exposing NFig UI
 
-We've also added middleware that handles the rendering of the NFig UI views used for managing overrides:
+We've also added middleware that handles the rendering of the NFig UI views. This is exposed as a static class that handles the HTTP request directly and can be called from an MVC controller or by being hooked up directly during application startup. This allows you to use whatever security model and routing mechanism yohr application is currently using:
+
+**Using MVC**
+
+```c#
+public class SettingsController
+{
+    [Authorize("Admins")]
+    [Route("settings/{*pathInfo}")]
+    public Task Settings() => NFigMiddleware<Settings, Tier, DataCenter>.HandleRequestAsync(HttpContext);
+}
+```
+
+**Using Kestrel**
 
 ```c#
 public class Startup
@@ -149,14 +163,81 @@ public class Startup
 
     public void Configure(IAppBuilder appBuilder, IHostingEnvironment hostingEnvironment)
     {
-        services.AddNFig<Settings, Tier, DataCenter>();
+        appBuilder.Use();
     }
 }
 ```
 
 ## Advanced Functionality
 
-We can even go so far as configuring
+We can even go so far as composing our settings classes from other configuration sources. NFig doesn't currently support encryption of secrets (although it's being developed for v3) so it isn't a good idea to store passwords or other secret information within it. In .NET Core, however, we can use the Options framework to compose our settings classes from multiple places; we can fetch our secrets from somewhere secure, using .NET's configuration source APIs. Here's an example using user secrets (note: user secrets are really intended for use at development time, this is not production-worthy code!):
+
+**secrets.json**
+
+```json
+{
+    "Database:Username": "user",
+    "Database:Password": "pass123!"
+}
+```
+
+**Program.cs**
+
+```c#
+public class Program
+{
+    public static void Main(string[] args)
+    {
+
+        WebHostBuilder.CreateDefault()
+            .UseStartup<Startup>();
+    }
+
+    public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+    {
+        return WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(
+                (hostingContext, config) =>
+                {
+                    config
+                        .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
+                        .AddUserSecrets<Startup>();
+                    }
+            )
+            .UseStartup<Startup>();
+        }
+}
+
+public class Startup
+{
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNFig<Settings, Tier, DataCenter>();
+
+        services
+            .AddOptions<DatabaseSettings>()
+            .Configure(
+                s => 
+                {
+                    var databaseSettings = _configuration.Get<DatabaseSettings>("Database");
+
+                    s.Username = databaseSettings.Username;
+                    s.Password = databaseSettings.Password;
+                });
+    }
+}
+```
+
+## Some Implementation Details
+
+You might be asking why we didn't implement .NET Core's `IConfigurationSource` and `IConfigurationProvider` interfaces and integrate at a lower level into the configuration subsystem...
 
 [NFig List]: /img/nfig-and-netcore-1.png "NFig List View"
 [NFig Setting]: /img/nfig-and-netcore-2.png "NFig Setting View"
