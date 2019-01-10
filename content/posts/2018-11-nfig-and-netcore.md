@@ -1,7 +1,7 @@
 ---
 title: "Integrating NFig with .NET Core"
-date: 2018-11-29T00:00:00Z
-tags: .net, 
+date: 2019-01-14T00:00:00Z
+tags: .net,nfig
 draft: true
 ---
 Over the past few weeks we've been busy laying the groundwork needed to support migrating Stack Overflow to [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-2.1).
