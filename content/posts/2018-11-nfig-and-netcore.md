@@ -6,7 +6,7 @@ draft: true
 ---
 Over the past few weeks we've been busy laying the groundwork needed to support migrating Stack Overflow to [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-2.1).
 
-Our roadmap for the migration extends out to next year, but we've been tackling a lot of pre-requisites:
+Our roadmap for the migration extends out to later this year, but we've been tackling a lot of pre-requisites:
 
 <!--more-->
 
@@ -19,7 +19,7 @@ We've also started some greenfield projects that aren't public-facing but that s
 
 ## NFig - Some Background
 
-NFig was originally written by [Bret Copeland](https://bret.codes/) and [Bryan Ross](https://rossipedia.com/) for the ad server that powers our job ads. After a while we started using it in other applications such as [Stack Overflow Talent](https://talent.stackoverflow.com/) and [Stack Overflow Jobs](https://stackoverflow.com/jobs/). It works by allowing us to define our configuration settings in code and then allowing us to change those settings at runtime by storing overrides in a backing store. Here's an example configuration class:
+NFig was originally written by [Bret Copeland](https://bret.codes/) and [Bryan Ross](https://rossipedia.com/) for the ad server that powers our job ads. After a while we started using it in other applications such as [Stack Overflow Talent](https://talent.stackoverflow.com/) and [Stack Overflow Jobs](https://stackoverflow.com/jobs/) as well as a few internal projects. It works by allowing us to define our configuration settings in code and then allowing us to change those settings at runtime by storing overrides in a backing store. Here's an example configuration class:
 
 ```c#
 public class Settings
@@ -47,7 +47,7 @@ if (Current.Settings.FeatureFlags.EnableWhizzbang)
 }
 ```
 
-NFig surfaces this is in configuration views provided by the NFig.UI package:
+NFig surfaces this is in configuration views provided by the [NFig.UI](https://github.com/NFig/NFig.UI) package:
 
 ![NFig List]
 
@@ -109,7 +109,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         // add services needed by NFig
-        // this includes adding the IOptions implementations
+        // under the hood this configures the DI container
+        // to resolve NFig settings as IOptions implementations
         services.AddNFig<Settings, Tier, DataCenter>();
     }
 
@@ -192,7 +193,7 @@ public class Startup
 
 ## Advanced Functionality
 
-We can even go so far as composing our settings classes from other configuration sources. NFig doesn't currently support encryption of secrets (although it's being developed for v3) so it isn't a good idea to store passwords or other secret information within it. In .NET Core, however, we can use the Options framework to compose our settings classes from multiple places; we can fetch our secrets from somewhere secure, using .NET's configuration source APIs. Here's an example using user secrets (note: user secrets are really intended for use at development time, this is not production-worthy code!):
+We can even go so far as composing our settings classes from other configuration sources. NFig doesn't currently support encryption of secrets (although it's being developed for v3) so it isn't a good idea to store passwords or other secret information within it. In .NET Core, however, we can use the Options framework to compose our settings classes from multiple places; we can fetch our secrets from somewhere secure, using .NET's configuration APIs. Here's an example using user secrets (note: user secrets are really intended for use at development time, this is not production-worthy code!):
 
 **secrets.json**
 
@@ -210,9 +211,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-
-        WebHostBuilder.CreateDefault()
-            .UseStartup<Startup>();
+        CreateWebHostBuilder(args).Run();
     }
 
     public static IWebHostBuilder CreateWebHostBuilder(string[] args)
@@ -259,16 +258,30 @@ public class Startup
 
 ## Some Implementation Details
 
-You might be asking why we didn't implement .NET Core's `IConfigurationSource` and `IConfigurationProvider` interfaces and integrate at a lower level into the configuration subsystem... We explicitly decided not to do so because NFig manages the lifetime and persistence itself. If we implemented the configuration interfaces we'd need to expose our configuration values as an `IDictionary<string, string>` and allow .NET Core to manage the binding of those values to strongly-typed classes. NFig does all of this for us:
+You might be asking why we didn't implement .NET Core's `IConfigurationSource` and `IConfigurationProvider` interfaces and integrate at a lower level into the configuration subsystem... We explicitly decided not to do so because NFig manages the lifetime and persistence of settings itself. If we implemented the configuration interfaces we'd need to expose our configuration values as an `IDictionary<string, string>` and allow .NET Core to manage the binding of those values to strongly-typed classes. NFig already does the following for us:
 
  - it instantiates the settings classes and re-creates them whenever they change
  - it marshals configuration values from strings to their actual types and back again
  
- In short, we really don't need to hook into the framework at such a low-level and hooking into `IOptions` is sufficient for our needs. That said, we've had to make some adjustments to how the Options framework works by default.
+In short, we really don't need to hook into the framework at such a low-level and hooking into `IOptions<T>` is sufficient for our needs. 
 
- ## Summary
+That said, we've had to make some adjustments to how the Options framework works by default by implementing some of the interfaces made available to us. 
+
+There are two kinds of options that you can inject into your classes - `IOptions<T>` and `IOptionsSnapshot<T>`.
+
+### `IOptions<T>`
+
+These are registered as a singleton so the `Value` property always resolves to the value that is initially read from a configuration source.
+
+### `IOptionsSnapshot<T>`
+
+These are registered as a scoped dependency so the `Value` property is always the most current value and retains that value throughout the scope (e.g. an HTTP request).
+
+By default these are both implemented by `OptionsFactory<T>` in .NET Core and as you can see from the code it tends to be a bit allocatey; an instance of `OptionsCache<T>` is created which contains a `ConcurrentDictionary<string, T>` containing a lazily initialized mapping of option names to their underlying objects. When using `IOptionsSnapshot<T>` that starts to add up because you get a new instance per request. We try to minimise allocations where possible here at Stack Overflow (GC hurts at scale!) so we override the default lifetime for NFig-provided settings to be a singleton that accesses the most recent value of a setting all the time by using the value tracked within an `IOptionsMonitor<T>`. This eliminates the allocations to be once per app per option type. To keep the options framework informed of when our NFig settings change we register a `IChangeTokenSource<T>` which notifies any listeners (including the `IOptionsMonitor<T>` mentioned above) of those changes.
+
+## Summary
  
- We've successfully integrated NFig into our .NET Core applications
+We've successfully integrated NFig into our .NET Core applications using this pattern and the library is available as an alpha package on [MyGet](https://myget.org/stackoverflow/...). You can poke at the source code on [GitHub](https://github.com/NFig/NFig.AspNetCore). Have fun!
 
 [NFig List]: /img/nfig-and-netcore-1.png "NFig List View"
 [NFig Setting]: /img/nfig-and-netcore-2.png "NFig Setting View"
