@@ -23,6 +23,8 @@ At this point we'd had quite enough of the stinking pile of tech debt lurking be
 
 ## Decisions, Decisions
 
+![Silly Kitty]
+Let's not make a bad decision like this kitty...
 
 Stack Exchange already has a [fairly comprehensive query language](https://stackoverflow.com/help/searching) that can be used to query posts across a particular site on the network. Ideally we wanted something that used similar syntax so that users could take their knowledge from one part of the site and use it in other places.
 
@@ -41,3 +43,5 @@ Finally, an AST is easy to test - we can take an input string, parse it and then
 ## Next Time
 
 Next time we'll talk about writing the parser for job search...
+
+[Silly Kitty]: /img/job-search-1.png "Silly Kitty"
