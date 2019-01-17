@@ -191,7 +191,7 @@ public class Startup
 }
 ```
 
-## Advanced Functionality
+## Advanced Functionality
 
 We can even go so far as composing our settings classes from other configuration sources. NFig doesn't currently support encryption of secrets (although it's being developed for v3) so it isn't a good idea to store passwords or other secret information within it. In .NET Core, however, we can use the Options framework to compose our settings classes from multiple places; we can fetch our secrets from somewhere secure, using .NET's configuration APIs. Here's an example using user secrets (note: user secrets are really intended for use at development time, this is not production-worthy code!):
 
@@ -281,7 +281,7 @@ By default these are both implemented by [`OptionsFactory<T>`](https://github.co
 
 ## Summary
  
-We've successfully integrated NFig into our .NET Core applications using this pattern and the library is available as an alpha package on [MyGet](https://myget.org/stackoverflow/...). You can poke at the source code on [GitHub](https://github.com/NFig/NFig.AspNetCore). Have fun!
+We've successfully integrated NFig into our .NET Core applications using this pattern and the library is available as an alpha package on [NuGet](https://www.nuget.org/packages/NFig.AspNetCore/). You can poke at the source code on [GitHub](https://github.com/NFig/NFig.AspNetCore). Have fun!
 
 [NFig List]: /img/nfig-and-netcore-1.png "NFig List View"
 [NFig Setting]: /img/nfig-and-netcore-2.png "NFig Setting View"
