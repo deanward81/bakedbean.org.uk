@@ -1,6 +1,6 @@
 ---
 title: "Integrating NFig with .NET Core"
-date: 2019-01-14T00:00:00Z
+date: 2019-01-18T00:00:00Z
 tags: .net,nfig
 draft: true
 ---
