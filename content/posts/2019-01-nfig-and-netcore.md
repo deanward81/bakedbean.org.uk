@@ -1,7 +1,8 @@
 ---
 title: "Integrating NFig with .NET Core"
 date: 2019-01-18T00:00:00Z
-tags: .net,nfig,stack-overflow
+tags: [.net, nfig, stack-overflow]
+images: [img/nfig-and-netcore-cover.png]
 ---
 Over the past few weeks we've been busy laying the groundwork needed to support migrating Stack Overflow to [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/?view=aspnetcore-2.1).
 
@@ -280,7 +281,7 @@ By default these are both implemented by [`OptionsFactory<T>`](https://github.co
 
 ## Summary
  
-We've successfully integrated NFig into our .NET Core applications using this pattern and the library is available as an alpha package on [NuGet](https://www.nuget.org/packages/NFig.AspNetCore/). You can poke at the source code on [GitHub](https://github.com/NFig/NFig.AspNetCore). Have fun!
+We've successfully integrated NFig into our .NET Core applications using this pattern and the library is available on [NuGet](https://www.nuget.org/packages/NFig.AspNetCore/). You can poke at the source code on [GitHub](https://github.com/NFig/NFig.AspNetCore). Have fun!
 
 [NFig List]: /img/nfig-and-netcore-1.png "NFig List View"
 [NFig Setting]: /img/nfig-and-netcore-2.png "NFig Setting View"

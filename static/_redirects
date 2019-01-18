@@ -1,0 +1,2 @@
+# Redirect domain aliases to primary domain
+https://bakedbean.me/* https://bakedbean.org.uk/:splat 301!
