@@ -1,6 +1,6 @@
 [build]
-publish = "public"
-command = "npm i -g postcss-cli && npm i && hugo --gc --minify"
+  publish = "public"
+  command = "npm i -g postcss-cli && npm i && hugo --gc --minify"
 
 [context.production.environment]
   HUGO_VERSION = "0.51"
@@ -8,7 +8,7 @@ command = "npm i -g postcss-cli && npm i && hugo --gc --minify"
   HUGO_ENABLEGITINFO = "true"
 
 [context.deploy-preview]
-command = "npm i -g postcss-cli && npm i && hugo  --gc --minify --buildFuture -b $DEPLOY_PRIME_URL"
+  command = "npm i -g postcss-cli && npm i && hugo  --gc --minify --buildFuture --buildDrafts -b $DEPLOY_PRIME_URL"
 
 [context.deploy-preview.environment]
-HUGO_VERSION = "0.51"
+  HUGO_VERSION = "0.51"

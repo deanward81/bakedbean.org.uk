@@ -3,9 +3,10 @@ languageCode = "en"
 defaultContentLanguage = "en"
 title = "Bakedbean"
 
-pygmentsStyle = "bw"
+pygmentsUseClasses = true
 pygmentsCodeFences = true
 pygmentsCodeFencesGuessSyntax = true
+pygmentsOptions = "linenos=true"
 enableEmoji = true
 
 googleAnalytics = "UA-34429122-1"
