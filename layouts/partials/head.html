@@ -1,5 +1,6 @@
 <base href="/">
 <meta charset="utf-8">
+<meta name="google-site-verification" content="mbjHRrRS31XEEF2uITQ-6qCND9aMs45PgnO2LPs7t_s" />
 <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="author" content="{{ with .Site.Params.author }}{{ . }}{{ end }}">
 {{ if isset . "Description" }}
@@ -9,6 +10,7 @@
 {{ end }}
 <title>Bakedbean.org.uk {{ with .Title }} - {{ . }}{{ end }}</title>
 {{ .Hugo.Generator }}
+{{ template "_internal/twitter_cards.html" . }}
 <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 {{ $bootstrapCss := resources.Get "css/bootstrap.min.css" }}
