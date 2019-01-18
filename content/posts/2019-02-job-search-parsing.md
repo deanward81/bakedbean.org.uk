@@ -1,7 +1,7 @@
 ---
 title: "A Deep Dive into Job Search - Parsing Queries"
 date: 2019-02-02T00:00:00Z
-tags: .net,jobs,stack-overflow
+tags: [.net, jobs, stack-overflow]
 draft: true
 ---
 

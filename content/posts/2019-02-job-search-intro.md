@@ -1,7 +1,7 @@
 ---
 title: "A Deep Dive into Job Search"
 date: 2019-02-01T00:00:00Z
-tags: .net,jobs,stack-overflow
+tags: [.net, jobs, stack-overflow]
 draft: true
 ---
 [Stack Overflow Jobs](https://stackoverflow.com/jobs) has always had the ability to perform searches across jobs on the site and for many years used a simplistic, hand-rolled implementation that served us well for a long time. It did have its quirks, however, and solicited a fair amount of feedback on our meta sites ([Meta.SE](https://meta.stackexchange.com/) and [Meta.SO](https://meta.stackoverflow.com/))
