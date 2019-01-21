@@ -15,13 +15,22 @@ You may be asking why we built a hand-rolled parser instead of something produce
 
 Onwards, let's talk about the steps we took to build our parser!
 
-## Writing the Parser
+## Defining the Grammar
 
-We started with an idea of the language we wanted to implement. This is referred to as the grammar. It's common to use [Backus-Naur Form (BNF)](https://en.m.wikipedia.org/wiki/Backus–Naur_form) which is a syntax used to desribe the individual components of the grammar. Here's Jobs Query Language (JQL) in BNF:
+We started with an idea of the language we wanted to implement. This is referred to as the grammar. It's common to use [Extended Backus-Naur Form (EBNF)](https://en.m.wikipedia.org/wiki/Extended_Backus–Naur_form)  which is a syntax used to desribe the individual components of the grammar. Here's Jobs Query Language (JQL) in EBNF:
 
 ```
-<string> ::= 
-<quoted_string> ::= '"' <string> '"'
+<quote> ::= '"'
+<lparen> ::= '('
+<rparen> ::= ')'
+<parens> ::= <lparen> | <rparen>
+<lbracket> ::= '['
+<rbracket> ::= ']'
+<brackets> ::= <lbracket> | <rbracket>
+<string> ::= { <any_character> - (<brackets> | <parens> | <quote>)
+<quoted_string> ::= <quote> { <any_character> - <quote> } <quote>
+<tag> ::= { <letter> | <number> | '-' | '.' | '#' | '+' | '*' }
+<unit> ::= 
 <value> ::= <number> | <string> | <quoted_string>
 ```
 
