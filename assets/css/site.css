@@ -54,6 +54,13 @@ body {
     padding-bottom: 10px;
 }
 
+hr {
+    border: solid 1px #aaa;
+    width: 50%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
 @media(max-width: 475px) {
     .navbar-brand > span {
         display: none;
