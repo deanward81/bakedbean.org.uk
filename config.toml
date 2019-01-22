@@ -10,6 +10,7 @@ pygmentsOptions = "linenos=true"
 enableEmoji = true
 
 googleAnalytics = "UA-34429122-1"
+disqusShortname = "bakedbean-org-uk"
 
 [params]
   author = "Dean Ward"
