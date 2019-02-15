@@ -1,5 +1,5 @@
 ---
-title: "A Deep Dive into Job Search"
+title: "Building Stack Overflow Job Search"
 date: 2019-02-01T00:00:00Z
 tags: [.net, jobs, stack-overflow]
 draft: true
