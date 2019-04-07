@@ -16,6 +16,11 @@ body {
     font-size: 1.3rem;
 }
 
+.navbar-expand-md .navbar-nav .nav-link {
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
 .content {
     background-color: #002b36;
     padding-top: 20px;
