@@ -10,26 +10,28 @@ pygmentsOptions = "linenos=true"
 enableEmoji = true
 
 googleAnalytics = "UA-34429122-1"
+disqusShortname = "bakedbean-org-uk"
 
 [params]
   author = "Dean Ward"
+  description = "Technical blog covering all things .NET and goings on at Stack Overflow"
   locale = "en-GB"
   tagLine = "// TODO: Write things"
 
 # Social links
 [[params.social]]
     name = "Github"
-    icon = "fab fa-github fa-2x"
+    icon = "icon-github icon-2x"
     weight = 1
     url = "https://github.com/deanward81/"
 [[params.social]]
     name = "Twitter"
-    icon = "fab fa-twitter fa-2x"
+    icon = "icon-twitter icon-2x"
     weight = 3
     url = "https://twitter.com/deanward81/"
 [[params.social]]
     name = "Stack Overflow"
-    icon = "fab fa-stack-overflow fa-2x"
+    icon = "icon-stack-overflow icon-2x"
     weight = 3
     url = "https://stackoverflow.com/users/871146/dean-ward"
 

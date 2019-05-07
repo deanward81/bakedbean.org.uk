@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     {{ partial "head.html" . }}
 </head>
@@ -16,8 +16,8 @@
             </ul>
         </div>
         {{ end }}
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".collapsible">
-            <i class="fas fa-bars"></i>
+        <button class="navbar-toggler" aria-label="nav toggle" type="button" data-toggle="collapse" data-target=".collapsible">
+            <i class="icon-navicon"></i>
         </button>
         <div class="mx-auto order-0 navbar-title">
             <a class="navbar-brand mx-auth" href="/">{{ .Site.Title }}<span> - {{ .Site.Params.TagLine }}</span></a>
@@ -27,7 +27,7 @@
             <ul class="navbar-nav ml-auto social">
                 {{ range . }}
                 <li class="nav-item">
-                    <a href="{{ .url }}" class="nav-link">
+                    <a href="{{ .url }}" class="nav-link" aria-label="{{ .name }}">
                         <i class="{{ .icon }}"></i>
                     </a>
                 </li>
