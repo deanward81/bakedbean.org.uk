@@ -6,6 +6,10 @@ body {
     font-family: 'monospace';
 }
 
+code {
+    color: gray;
+}
+
 .navbar-toggler {
     border-color: white !important;
     color: white;
