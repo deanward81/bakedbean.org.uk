@@ -1,3 +1,4 @@
+/* purgecss start ignore */
 html {
     font-size: 14px;
 }
@@ -86,3 +87,4 @@ hr {
     }
 
 }
+/* purgecss end ignore */
