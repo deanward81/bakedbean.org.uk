@@ -5,7 +5,7 @@ tags: [.net, jobs, stack-overflow]
 images: [img/job-search-cover.png]
 ---
 
-In [Part 1](2019-04-job-search-1-intro) we talked about some of the shortcomings of Stack Overflow's job search and how we planned to address them. In this episode we'll dive into how our parser is written.
+In [Part 1](2019-05-job-search-1-intro) we talked about some of the shortcomings of Stack Overflow's job search and how we planned to address them. In this episode we'll dive into how our parser is written.
 
 ## Some Background
 
