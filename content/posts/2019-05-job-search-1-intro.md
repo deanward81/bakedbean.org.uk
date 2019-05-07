@@ -1,7 +1,8 @@
 ---
 title: "Building Stack Overflow Job Search"
-date: 2019-05-07T00:00:00Z
+date: 2019-05-08T00:00:00Z
 tags: [.net, jobs, stack-overflow]
+images: [img/job-search-cover.png]
 ---
 [Stack Overflow Jobs](https://stackoverflow.com/jobs) has always had the ability to perform searches across jobs on the site and, until a couple of years ago, used a simplistic implementation that served us well for a long time. It did have its quirks, however, and solicited a fair amount of feedback on our meta sites ([Meta Stack Exchange](https://meta.stackexchange.com/) and [Stack Overflow Meta](https://meta.stackoverflow.com/))
 from developers feeling that they were unable to really filter things the way they want to... And that didn’t really sit too well with us! In an effort to better understand the problems, we set out to investigate how we could provide better search capability for jobs. Along the way we made data store, query engine and performance tweaks.

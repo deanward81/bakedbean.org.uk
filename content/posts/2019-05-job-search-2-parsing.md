@@ -1,8 +1,8 @@
 ---
 title: "Building Stack Overflow Job Search - Parsing Queries"
-date: 2019-05-08T00:00:00Z
+date: 2019-05-09T00:00:00Z
 tags: [.net, jobs, stack-overflow]
-draft: true
+images: [img/job-search-cover.png]
 ---
 
 In [Part 1](2019-04-job-search-1-intro) we talked about some of the shortcomings of Stack Overflow's job search and how we planned to address them. In this episode we'll dive into how our parser is written.
@@ -13,7 +13,7 @@ Most people seem to get scared the moment the words lexer or parser get mentione
 
 Intitially we went with a hand-rolled parser instead of something produced by a parser generator like ANTLR because the output produced by ANTLR was large and unwieldy. We also had to customise it to handle malformed input (more on that below) which made the code less than elegant.
 
-Originally I wrote this post about building that hand-rolled parser but trying to explain it concisely wound up being complex and verbose. I think this points to it being hard to grok and maintain so I set out to write the parser combinator version instead. It turned out well enough (it passes all tests and performance is relatively close to the original) that I thought I'd write about that instead...
+Originally I wrote this post about building that hand-rolled parser but trying to explain it concisely wound up being complex and verbose. I think this points to it being hard to grok and maintain so I set out to write an implementation using a [parser combinator](https://en.wikipedia.org/wiki/Parser_combinator) library instead. It turned out good enough (i.e. it passes all tests and performance is relatively close to the original) that I thought I'd write about that instead... 
 
 Onwards, let's talk about the steps we took to build our parser!
 
@@ -68,7 +68,9 @@ Of particular importance is the definition of `<expression>`; this is what allow
 
 ## Building the Parser
  
-Once we've defined a grammar, our next step is to break down each rule into a set of mini-parsers. In our case we'd like to take an arbitrary string input and return something representing the parsed form of it. A common way of representing the parsed form is as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+Once we've defined a grammar, our next step is to break down each rule into a set of mini-parsers. This is what a parser combinator does best so we decided to use [Pidgin](https://github.com/benjamin-hodgson/Pidgin) - it eliminates a lot of the mistakes that are common in writing your own parser and performs very well thanks to Stack's very own parser wizard [Benjamin Hodgson](https://benjamin.pizza/).
+
+In our case we'd like to take an arbitrary string input and return something representing the parsed form of it. A common way of representing the parsed form is as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
 JQL is represented using an AST that uses an abstract base class called `JqlNode`. We have implementations that reflect the structure of the grammar. E.g. it consists of a `QueryNode` representing a query which can contain things like `LiteralNode` to represent text/numbers/bools and `ModifierNode` to handle modifiers like `remote:true`. Here's how that looks:
 
