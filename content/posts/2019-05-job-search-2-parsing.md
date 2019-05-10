@@ -19,7 +19,17 @@ Onwards, let's talk about the steps we took to build our parser!
 
 ## Defining the Grammar
 
-We started with an idea of the language we wanted to implement. This is referred to as the grammar. It's common to use [Extended Backus-Naur Form (EBNF)](https://en.m.wikipedia.org/wiki/Extended_Backus–Naur_form)  which is a syntax used to desribe the individual components of the grammar. Here's a snippet of Jobs Query Language (JQL) in EBNF:
+We started with an idea of the language we wanted to implement. We wanted it to be similar to what was available in [Stack Overflow's search](https://stackoverflow.com/help/searching) and for it to support the facets defined upon a job. So we came up with some example queries:
+
+- **Simple Text**: `hello world`
+- **Quoted Text**: `"hello world"`
+- **Tags**: `[asp.net]`
+- **Modifiers**: `salary:10000` or `salary:10000USD`
+- **Ranges**: `salary:10000..20000` or `salary:..50000` or `salary:10000..`
+- **Expressions**: `[asp.net] or "hello world"` or `[c#] and not [java] and salary:10000..20000`
+- **Complex Expressions**: `([asp.net] or "hello world") and (([c#] and not [java]) or salary:10000..)`
+
+We then defined the language using [Extended Backus-Naur Form (EBNF)](https://en.m.wikipedia.org/wiki/Extended_Backus–Naur_form). This is generally referred to as the grammar of the language and EBNF is a syntax used to desribe the individual components of the grammar. Here's a snippet of Jobs Query Language (JQL) in EBNF:
 
 ```
 <and> ::= 'and' | '&&';
@@ -53,16 +63,6 @@ We started with an idea of the language we wanted to implement. This is referred
     <expression>, <or>, <expression> |
     <term>;
 ```
-
-This supports a wide variety of inputs for search:
-
-- **Simple Text**: `hello world`
-- **Quoted Text**: `"hello world"`
-- **Tags**: `[asp.net]`
-- **Modifiers**: `salary:10000` or `salary:10000USD`
-- **Ranges**: `salary:10000..20000` or `salary:..50000` or `salary:10000..`
-- **Expressions**: `[asp.net] or "hello world"` or `[c#] and not [java] and salary:10000..20000`
-- **Complex Expressions**: `([asp.net] or "hello world") and (([c#] and not [java]) or salary:10000..)`
 
 Of particular importance is the definition of `<expression>`; this is what allows for the nesting of different parts of the grammar via recursion.
 
