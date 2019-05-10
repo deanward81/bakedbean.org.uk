@@ -81,13 +81,10 @@ class QueryNode : JqlNode
     public ImmutableArray<JqlNode> Children { get; }
 }
 
-class LiteralNode<T> : JqlNode
+class GroupNode : JqlNode
 {
-    public T Value { get; }
+    public ImmutableArray<JqlNode> Children { get; }
 }
-
-class TextNode : LiteralNode<string> { }
-class BooleanNode : LiteralNode<bool> { }
 
 class ModifierNode : JqlNode
 {
@@ -96,6 +93,14 @@ class ModifierNode : JqlNode
     // for the remote:true case this would be a "BooleanNode" with its value set to true
     public JqlNode Operand { get; }
 }
+
+class LiteralNode<T> : JqlNode
+{
+    public T Value { get; }
+}
+
+class TextNode : LiteralNode<string> { }
+class BooleanNode : LiteralNode<bool> { }
 ```
 
 We can build a parser that takes a `string` (which at its most primitive level is just an array of `char`) and produces a `JqlNode` tree as a result. This is represented in Pidgin using a `Parser<char, JqlNode>` - here's an example of how we define a tag:
@@ -103,8 +108,9 @@ We can build a parser that takes a `string` (which at its most primitive level i
 ```c#
 public class JqlParser
 {
-    private static Parser<char, T> Token<T>(Parser<char, T> p) => 
-        Try(p).Before(SkipWhitespaces);
+    private static Parser<char, T> Token<T>(Parser<char, T> p) => Try(p).Before(SkipWhitespaces);
+    private static Parser<char, string> Token(string token) => Token(String(token));
+    private static Parser<char, char> Token(char token) => Token(Char(token));
     
     private static readonly Parser<char, char> _tagChars = 
         LetterOrDigit.Or(OneOf('-', '#', '_', '+', '*', '.'));
@@ -118,7 +124,7 @@ public class JqlParser
         .Select<JqlNode>(t => JqlBuilder.Tag(t))
         .Labelled("tag");
             
-    public JqlNode ParseTag(string input) => _tag.ParseOrThrow(input);
+    public static JqlNode Parse(string input) => _tag.ParseOrThrow(input);
 }
 ```
 
@@ -142,7 +148,7 @@ This seems like it would be complicated, but fear not, Pidgin makes this really 
 public class JqlParser
 {
     private static Parser<char, JqlNode> Parenthesised(Parser<char, JqlNode> parser) => 
-        parser.Between(Token(_lparen), Token(_rparen)).Select<JqlNode>(n => new GroupNode(n));
+        parser.Between(Token('('), Token(')')).Select<JqlNode>(n => new GroupNode(n));
 
     private static readonly Parser<char, Func<JqlNode, JqlNode, JqlNode>> _and = 
         Binary(Token("and").ThenReturn(JqlNodeType.And));
@@ -163,9 +169,9 @@ public class JqlParser
                 Operator.InfixL(_and),
                 Operator.InfixL(_or)
             }
-        ).Many().Select(x => new QueryNode(x));
+        ).AtLeastOnce().Select<JqlNode>(x => new QueryNode(x));
 
-    public static QueryNode ParseTagExpression(string input) => (QueryNode)_expressionParser.ParseOrThrow(input);
+    public static QueryNode Parse(string input) => (QueryNode)_expressionParser.ParseOrThrow(input);
 }
 ```
 
