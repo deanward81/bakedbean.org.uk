@@ -1,6 +1,6 @@
 ---
 title: "Building Stack Overflow Job Search"
-date: 2019-05-08T00:00:00Z
+date: 2019-05-10T00:00:00Z
 tags: [.net, jobs, stack-overflow]
 images: [img/job-search-cover.png]
 ---
