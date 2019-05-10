@@ -1,6 +1,6 @@
 ---
 title: "Building Stack Overflow Job Search - Parsing Queries"
-date: 2019-05-10T17:00:00Z
+date: 2019-05-10T19:00:00Z
 tags: [.net, jobs, stack-overflow]
 images: [img/job-search-cover.png]
 ---
