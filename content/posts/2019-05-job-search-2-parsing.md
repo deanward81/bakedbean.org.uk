@@ -15,7 +15,7 @@ Intitially we went with a hand-rolled parser instead of something produced by a 
 
 Originally I wrote this post about building that hand-rolled parser but trying to explain it concisely wound up being complex and verbose. I think this points to it being hard to grok and maintain so I set out to write an implementation using a [parser combinator](https://en.wikipedia.org/wiki/Parser_combinator) library instead. It turned out good enough (i.e. it passes all tests and performance is relatively close to the original) that I thought I'd write about that instead... 
 
-You can find all the source code related to this post in [GitHub](https://github.com/deanward81/bakedbean.org.uk/samples).
+You can find all the source code related to this post in [GitHub](https://github.com/deanward81/bakedbean.org.uk/tree/master/samples).
 
 Onwards, let's talk about the steps we took to build our parser!
 
