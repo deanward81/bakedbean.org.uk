@@ -32,7 +32,7 @@ namespace Samples.Lib
                     switch (right)
                     {
                         case QueryNode q2:
-                            return q1.Children.Length == q2.Children.Length
+                            return q1.Children.Count == q2.Children.Count
                                 && q1.Children
                                     .Zip(q2.Children, SyntacticallyEquals)
                                     .All(b => b);
@@ -43,7 +43,7 @@ namespace Samples.Lib
                     switch (right)
                     {
                         case GroupNode g2:
-                            return g1.Children.Length == g2.Children.Length
+                            return g1.Children.Count == g2.Children.Count
                                 && g1.Children
                                     .Zip(g2.Children, SyntacticallyEquals)
                                     .All(b => b);
@@ -77,7 +77,7 @@ namespace Samples.Lib
                 case QueryNode queryNode:
                     {
                         var children = queryNode.Children;
-                        for (var i = children.Length - 1; i >= 0; i--)
+                        for (var i = children.Count - 1; i >= 0; i--)
                         {
                             var child = children[i];
                             var newChild = CollapseNodes(child);
@@ -85,6 +85,11 @@ namespace Samples.Lib
                             {
                                 children = children.SetItem(i, newChild);
                             }
+                        }
+
+                        if (children.Count == 1 && children[0] is GroupNode n)
+                        {
+                            return new QueryNode(n.Children);
                         }
 
                         if (!ReferenceEquals(children, queryNode.Children))
@@ -95,13 +100,13 @@ namespace Samples.Lib
                     }
                 case GroupNode groupNode:
                     {
-                        if (groupNode.Children.Length == 1)
+                        if (groupNode.Children.Count == 1)
                         {
                             return CollapseNodes(groupNode.Children[0]);
                         }
 
                         var children = groupNode.Children;
-                        for (var i = children.Length - 1; i >= 0; i--)
+                        for (var i = children.Count - 1; i >= 0; i--)
                         {
                             var child = children[i];
                             var newChild = CollapseNodes(child);

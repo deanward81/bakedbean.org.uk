@@ -15,6 +15,8 @@ Intitially we went with a hand-rolled parser instead of something produced by a 
 
 Originally I wrote this post about building that hand-rolled parser but trying to explain it concisely wound up being complex and verbose. I think this points to it being hard to grok and maintain so I set out to write an implementation using a [parser combinator](https://en.wikipedia.org/wiki/Parser_combinator) library instead. It turned out good enough (i.e. it passes all tests and performance is relatively close to the original) that I thought I'd write about that instead... 
 
+You can find all the source code related to this post in [GitHub](https://github.com/deanward81/bakedbean.org.uk/samples).
+
 Onwards, let's talk about the steps we took to build our parser!
 
 ## Defining the Grammar
@@ -196,9 +198,9 @@ However, there are a couple of cases where the parser can become confused. For e
 ```c#
 public class JqlParser
 {
-    private static readonly Parser<char, Pidgin.Unit> _validTerminators = Lookahead(
-        _rparen.ThenReturn(Pidgin.Unit.Value)
-    ).Or(End);
+    private static readonly Parser<char, Unit> _validTerminators = Lookahead(
+        _rparen.ThenReturn(Unit.Value)
+    ).Or(EndOfLine);
 
     private static readonly Parser<char, JqlNode> _trailingAnd = Try(
         _and.Select<JqlNode>(JqlBuilder.Text).Before(_validTerminators)

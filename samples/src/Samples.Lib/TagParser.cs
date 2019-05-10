@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Pidgin;
 using Pidgin.Expression;
 using static Pidgin.Parser;
+using static Pidgin.Parser<char>;
 
 namespace Samples.Lib
 {
@@ -34,9 +35,23 @@ namespace Samples.Lib
         private static Parser<char, Func<JqlNode, JqlNode, JqlNode>> Binary(Parser<char, JqlNodeType> op) =>
                 op.Select<Func<JqlNode, JqlNode, JqlNode>>(type => (l, r) => new BinaryNode(l, r, type));
 
+        private static readonly Parser<char, Unit> _validTerminators = Lookahead(
+            Char(')').ThenReturn(Unit.Value)
+        ).Or(End);
+
+        private static readonly Parser<char, JqlNode> _trailingAnd = Try(
+            Token("and").Select<JqlNode>(JqlBuilder.Text).Before(_validTerminators)
+        );
+
+        private static readonly Parser<char, JqlNode> _trailingOr = Try(
+            Token("or").Select<JqlNode>(x => JqlBuilder.Text(x)).Before(_validTerminators)
+        );
+
         private static readonly Parser<char, JqlNode> _expressionParser =
              ExpressionParser.Build<char, JqlNode>(
                 p => OneOf(
+                    _trailingAnd,
+                    _trailingOr,
                     _tag,
                     Parenthesised(p)
                 ).AtLeastOnce().Select<JqlNode>(JqlBuilder.Group),

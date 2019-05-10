@@ -28,15 +28,15 @@ namespace Samples.Lib
     {
         public QueryNode(JqlNode node) : base(JqlNodeType.Query)
         {
-            Children = ImmutableArray.Create(node);
+            Children = ImmutableList.Create(node);
         }
 
         public QueryNode(IEnumerable<JqlNode> nodes) : base(JqlNodeType.Query)
         {
-            Children = ImmutableArray.CreateRange(nodes);
+            Children = ImmutableList.CreateRange(nodes);
         }
 
-        public ImmutableArray<JqlNode> Children { get; }
+        public ImmutableList<JqlNode> Children { get; }
     }
 
     public class TextNode : JqlNode
@@ -66,15 +66,15 @@ namespace Samples.Lib
     {
         public GroupNode(JqlNode node) : base(JqlNodeType.Group)
         {
-            Children = ImmutableArray.Create(node);
+            Children = ImmutableList.Create(node);
         }
 
         public GroupNode(IEnumerable<JqlNode> nodes) : base(JqlNodeType.Group)
         {
-            Children = ImmutableArray.CreateRange(nodes);
+            Children = ImmutableList.CreateRange(nodes);
         }
 
-        public ImmutableArray<JqlNode> Children { get; }
+        public ImmutableList<JqlNode> Children { get; }
     }
 
     public class ModifierNode : JqlNode
@@ -94,7 +94,10 @@ namespace Samples.Lib
         public static JqlNode And(this JqlNode left, JqlNode right) => new BinaryNode(left, right, JqlNodeType.And);
         public static JqlNode Or(this JqlNode left, JqlNode right) => new BinaryNode(left, right, JqlNodeType.Or);
         public static JqlNode Tag(string tag) => new ModifierNode("tag", new TextNode(tag));
+        public static JqlNode Text(string value) => new TextNode(value);
         public static JqlNode Group(IEnumerable<JqlNode> nodes) => new GroupNode(nodes);
+        public static JqlNode Group(params JqlNode[] nodes) => new GroupNode(nodes);
         public static JqlNode Query(JqlNode node) => new QueryNode(node);
+        public static JqlNode Query(params JqlNode[] nodes) => new QueryNode(nodes);
     }
 }
