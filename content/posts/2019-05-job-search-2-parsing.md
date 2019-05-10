@@ -11,9 +11,9 @@ In [Part 1](/posts/2019-05-job-search-1-intro) we talked about some of the short
 
 Most people seem to get scared the moment the words lexer or parser get mentioned. I'd highly recommend watching [Rob Pike's talk](https://youtube.com/watch?v=HxaD_trXwRE) on the Go lexer and parser; it clears up a lot of misconceptions and provides a solid basis for writing a hand-rolled parser.
 
-Intitially we went with a hand-rolled parser instead of something produced by a parser generator like ANTLR because the output produced by ANTLR was large and unwieldy. We also had to customise it to handle malformed input (more on that below) which made the code less than elegant.
+Intitially we went with a hand-rolled parser instead of using a parser generator like ANTLR because the output produced by ANTLR was large and unwieldy. We also had to customise it to handle malformed input (more on that below) which made the code less than elegant.
 
-Originally I wrote this post about building that hand-rolled parser but trying to explain it concisely wound up being complex and verbose. I think this points to it being hard to grok and maintain so I set out to write an implementation using a [parser combinator](https://en.wikipedia.org/wiki/Parser_combinator) library instead. It turned out good enough (i.e. it passes all tests and performance is relatively close to the original) that I thought I'd write about that instead... 
+Originally I wrote this post about building that hand-rolled parser but trying to explain it concisely wound up being complex and verbose. I think this points to it being hard to grok and maintain so I set out to write an implementation using a [parser combinator](https://en.wikipedia.org/wiki/Parser_combinator) library instead. It turned out good enough (i.e. it passes all tests and performance is relatively close to the original) that I thought I'd write about that instead, although we're not yet using it in production.
 
 You can find all the source code related to this post in [GitHub](https://github.com/deanward81/bakedbean.org.uk/tree/master/samples).
 
@@ -31,7 +31,7 @@ We started with an idea of the language we wanted to implement. We wanted it to 
 - **Expressions**: `[asp.net] or "hello world"` or `[c#] and not [java] and salary:10000..20000`
 - **Complex Expressions**: `([asp.net] or "hello world") and (([c#] and not [java]) or salary:10000..)`
 
-We then defined the language using [Extended Backus-Naur Form (EBNF)](https://en.m.wikipedia.org/wiki/Extended_Backus–Naur_form). This is generally referred to as the grammar of the language and EBNF is a syntax used to desribe the individual components of the grammar. Here's a snippet of Jobs Query Language (JQL) in EBNF:
+We then defined the language using [Extended Backus-Naur Form (EBNF)](https://en.m.wikipedia.org/wiki/Extended_Backus–Naur_form). This is generally referred to as the grammar of the language and EBNF is a syntax used to describe the individual components of the grammar. Here's a snippet of Jobs Query Language (JQL) in EBNF:
 
 ```
 <and> ::= 'and' | '&&';
@@ -80,12 +80,12 @@ JQL is represented using an AST that uses an abstract base class called `JqlNode
 abstract class JqlNode {}
 class QueryNode : JqlNode
 {
-    public ImmutableArray<JqlNode> Children { get; }
+    public ImmutableList<JqlNode> Children { get; }
 }
 
 class GroupNode : JqlNode
 {
-    public ImmutableArray<JqlNode> Children { get; }
+    public ImmutableList<JqlNode> Children { get; }
 }
 
 class ModifierNode : JqlNode
@@ -189,9 +189,9 @@ But that's not the end of the tale, we have a grammar that works well for *expec
 
 ## Handling Bad Input
 
-We've seen all kinds of nonsense make its way into job search. Sometimes it's typos, other times it's malicious input - how should we handle this kind of input? We *could* just return a HTTP `400 Bad Request` with details of where in the input we failed but we can generally pull something useful enough out of the input to run a query against the backend, so why not do so?
+We've seen all kinds of nonsense make its way into job search. Sometimes it's typos, other times it's malicious input. We *could* just return a HTTP `400 Bad Request` with details of where in the input we failed but we can generally pull something useful enough out of the input to run a query against the backend, so why not do so?
 
-Our most common fallback is to treat anything we don't really understand as just a text query. It's a reasonable fallback - we return results and users generally adjust their query, possibly correcting syntactic mistakes, if the results don't seem to be that useful. The way we treat text queries in Elastic means that we'll generally pick up anything useful in the user's input.
+Our most common fallback is to treat anything we don't really understand as just a text query. It's a reasonable fallback - we pass the text to Elastic and it works out any relevant terms. This means we return results and users generally adjust their query, possibly correcting syntactic mistakes, if the results don't seem to be that useful.
 
 However, there are a couple of cases where the parser can become confused. For example `[c#] and ([sql-server] or)` will break the parser - it doesn't know how to handle the trailing `or` because it interprets it as part of a binary expression. This is essentially an implementation detail of Pidgin's `ExpressionParser` that we need to work around - notably that it starts parsing by evaluating the list of terms we provided and when it successfully parses a term it starts to parse the operators. Once it is parsing the operator it does not have the ability to backtrack again so the trailing `or` is *always* treated as an operator. To workaround this we explicitly handle a trailing binary operator followed by a bracket and treat it as a JQL `TextNode`:
 

@@ -4,7 +4,7 @@ date: 2019-05-10T00:00:00Z
 tags: [.net, jobs, stack-overflow]
 images: [img/job-search-cover.png]
 ---
-[Stack Overflow Jobs](https://stackoverflow.com/jobs) has always had the ability to perform searches across jobs on the site and, until a couple of years ago, used a simplistic implementation that served us well for a long time. It did have its quirks, however, and solicited a fair amount of feedback on our meta sites ([Meta Stack Exchange](https://meta.stackexchange.com/) and [Stack Overflow Meta](https://meta.stackoverflow.com/))
+[Stack Overflow Jobs](https://stackoverflow.com/jobs) has always had the ability to perform searches across jobs on the site and, until a couple of years ago, used a simplistic implementation that served us well for a long time. It did have its quirks, however, and solicited a fair amount of feedback on our meta sites ([Meta Stack Exchange](https://meta.stackexchange.com/search?q=%5Bcareers%5D+search) and [Stack Overflow Meta](https://meta.stackoverflow.com/search?q=%5Bjobs%5D+search+created%3A..2016-09)
 from developers feeling that they were unable to really filter things the way they want to... And that didn’t really sit too well with us! In an effort to better understand the problems, we set out to investigate how we could provide better search capability for jobs. Along the way we made data store, query engine and performance tweaks.
 
 The next few posts are about that journey and the technical details behind our job search implementation.
@@ -34,9 +34,9 @@ And finally we wanted something that was easily extendable *and* testable (yes, 
 
 We had previously found the string parsing code hard to test and maintain, so avoiding anything similar to that seemed like a good plan. Unfortunately the query language used by Stack Exchange was exactly the kind of parsing nightmare that we were trying to avoid in the first place (it's fast but hard to tweak) so we decided it'd be better to start with a clean implementation that we could drop into other places later.
 
-We wanted to have a functionally equivalent language and decided to implement Jobs Query Language (JQL) using a lexer and recursive descent parser. The parser generates an abstract syntax tree (AST) representing the query which we can then [visit](https://www.dofactory.com/net/visitor-design-pattern) and generate an Elastic query from. It could theoretically be used to generate a query for any data store. Turns out that ability came in useful later on! 
+We wanted to have a language that was functionally equivalent to Stack Exchange's and decided to implement Jobs Query Language (JQL) using a lexer and recursive descent parser. The parser generates an abstract syntax tree (AST) representing the query which we can then [visit](https://www.dofactory.com/net/visitor-design-pattern) and generate an Elastic query from. It could theoretically be used to generate a query for any data store. Turns out that ability came in useful later on! 
 
-In addition, producing a tree lets us do things like replace front-end parts of a query (e.g. like favorite:true) into a query that makes more sense for the data we actually store in our data stores (e.g. a list of a user’s favorite job ids).
+In addition, producing a tree lets us do things like replace front-end parts of a query (e.g. `favorite:true`) into a query that makes more sense for the data we actually store in our data stores (e.g. a list of a user’s favorite job ids).
 
 Finally, an AST is easy to test - we can take an input string, parse it and then compare the output tree to an expected tree. \o/
 
