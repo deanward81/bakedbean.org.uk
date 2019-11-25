@@ -268,7 +268,7 @@ var query = new QueryNode(
             new TextNode("full stack developer"),
             new ModifierNode(
                 "remote",
-                new BoolNode(true)
+                new BooleanNode(true)
             )
         )
 );
