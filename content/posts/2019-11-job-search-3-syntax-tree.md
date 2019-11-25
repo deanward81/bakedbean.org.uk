@@ -7,13 +7,13 @@ images: [img/job-search-cover.png]
 ---
 [Last time](2019-05-job-search-2-parsing) we talked about how we built a parser that can take a string input (written in Jobs Query Language or JQL) and parse it into an abstract syntax tree (AST) representing the query.
 
-This episode explores the reasons why we would do this and what we can do with tree once we have it.
+This episode explores the reasons why we would do this and what we can do with the tree once we have it.
 
 ## Syntax Tree Uses
 
-We could take an input string representing JQL and directly translate into a query against our data store (in our case ElasticSearch) but we choose to represent it as an abstract syntax tree instead.
+We could take an input string representing JQL and directly translate into a query against our data store (in our case Elasticsearch) but we choose to represent it as an abstract syntax tree instead. Why is that?
 
-An intermediate representation between a user's raw string input and a query to a data store affords us a host of benefits. One of the most useful ones is being able to rewrite parts of a query to better suit the underlying data store. For example `favorite:true` is used to search for jobs a user favorited. However we don't store that data directly in Elasticsearch because doing so means we have to update Elastic every time a user changes their favorites. This is expensive and unnecessary - instead we can query SQL for the job identifiers that the user favorited and then rewrite the query to search for those identifiers instead.
+An intermediate representation between a user's raw string input and a query to a data store affords us a host of benefits. One of the most useful ones is being able to rewrite parts of a query to better suit the underlying data store. For example `favorite:true` is used to search for jobs a user favorited. However we don't store thaWt data directly in Elasticsearch because doing so means we have to update Elastic every time a user changes their favorites. This is expensive and unnecessary - instead we can query SQL for the job identifiers that the user favorited and then rewrite the query to search for those identifiers instead.
 
 Another example is where we perform geo-lookups - a user can type "London, UK" into the location input and we'll rewrite the query to use lat/lon or a bounding box based upon results from our geo-provider (Google right now) for the text.
 
@@ -68,27 +68,16 @@ public abstract class JqlVisitor<T>
     }
 
     protected abstract T VisitQuery(QueryNode node);
-
     protected abstract T VisitGroup(GroupNode node);
-
     protected abstract T VisitUnary(UnaryNode node);
-
     protected abstract T VisitBinary(BinaryNode node);
-
     protected abstract T VisitModifier(ModifierNode node);
-
     protected abstract T VisitBoolean(BooleanNode node);
-
     protected abstract T VisitText(TextNode node);
-
     protected abstract T VisitNumber(NumberNode node);
-
     protected abstract T VisitDate(DateNode node);
-
     protected abstract T VisitGeo(GeoNode node);
-
     protected abstract T VisitLocation(LocationNode node);
-
     protected abstract T VisitWeight(WeightedNode node);
 
     protected static Exception UnsupportedType(JqlNodeType type)
@@ -98,7 +87,7 @@ public abstract class JqlVisitor<T>
 }
 ```
 
-We then had a whole hierarchy dedicated to different kinds of visitors - for example to transform a tree - like the favorites example from before we needed a base class just for transformations:
+We then had a whole hierarchy dedicated to different kinds of visitors - for example to transform a tree - like the favorites example from before - we needed a base class just for transformations:
 
 ```c#
 public abstract class TransformingJqlVisitor : JqlVisitor<JqlNode>
@@ -195,41 +184,13 @@ public abstract class TransformingJqlVisitor : JqlVisitor<JqlNode>
         return node;
     }
 
-    protected override JqlNode VisitBoolean(BooleanNode node)
-    {
-        return node;
-    }
-
-    protected override JqlNode VisitDate(DateNode node)
-    {
-        return node;
-    }
-
-    protected override JqlNode VisitGeo(GeoNode node)
-    {
-        return node;
-    }
-
-    protected override JqlNode VisitLocation(LocationNode node)
-    {
-        return node;
-    }
-
-    protected override JqlNode VisitModifier(ModifierNode node)
-    {
-        return node;
-    }
-
-    protected override JqlNode VisitNumber(NumberNode node)
-    {
-        return node;
-    }
-
-    protected override JqlNode VisitText(TextNode node)
-    {
-        return node;
-    }
-
+    protected override JqlNode VisitBoolean(BooleanNode node) => node;
+    protected override JqlNode VisitDate(DateNode node) => node;
+    protected override JqlNode VisitGeo(GeoNode node) => node;
+    protected override JqlNode VisitLocation(LocationNode node) => node;
+    protected override JqlNode VisitModifier(ModifierNode node) => node;
+    protected override JqlNode VisitNumber(NumberNode node) => node;
+    protected override JqlNode VisitText(TextNode node) => node;
     protected override JqlNode VisitWeight(WeightedNode node)
     {
         node.Operand = Visit(node.Operand);
@@ -291,15 +252,15 @@ class FavoriteJqlVisitor : TransformingJqlVisitor
 
 But... what if we needed this query to execute asynchronously? Sadly, to make this work with `async`/`await` we had to implement our abstract hierarchy again. This caused a whole bunch of unnecessary maintenance headaches!
 
-A member of the Talent team, [Benjamin Hodgson](https://benjamin.pizza/) identified this pain and addressed it in his [Sawmill](https://github.com/benjamin-hodgson/Sawmill) library. Sawmill handles tree recursion in a far more elegant way, but I won't go into it here - Benjamin has an extensive [blog post](https://www.benjamin.pizza/posts/2017-11-13-recursion-without-recursion.html) detailing how JQL visitors and its AST representation were tweaked to use Sawmill's capabilities.
+My colleague on the Talent team, [Benjamin Hodgson](https://benjamin.pizza/) identified this pain and addressed it in his [Sawmill](https://github.com/benjamin-hodgson/Sawmill) library. Sawmill handles tree recursion in a far more elegant way, but I won't go into it here - Benjamin has an extensive [blog post](https://www.benjamin.pizza/posts/2017-11-13-recursion-without-recursion.html) detailing how JQL visitors and its AST representation were tweaked to use Sawmill's capabilities.
 
 # Querying Elastic
 
 Once we have an AST representing our query we can perform transformations upon it - perhaps swapping out parts of the tree like we did for favorite jobs, but we can also completely transform to another representation. In our case that means we can take our query language and transform it into a Elasticsearch query or a SQL query.
 
-The code for this is fairly lengthy, so I'll describe how we convert the simple query `"full stack developer" remote:true` into Elastic:
+The code for this is fairly lengthy so, instead, I'll describe how we convert the simple query `"full stack developer" remote:true` into Elastic:
 
-1. Generate an AST from the query. We end up with
+1. Generate an AST from the query. We end up with:
 
 ```c#
 var query = new QueryNode(
@@ -313,7 +274,7 @@ var query = new QueryNode(
 );
 ```
 
-1. Pass that AST to our Elastic visitor. Our Elastic visitor maintains a mapping of modifier names and how to translate them into an Elastic query. For example the `remote` modifier accepts a `bool` operand - in the visitor we map this to the `IsRemote` field in Elastic and a `term` query accepting a `bool` value. Bare text values are generally mapped to a `multi_match` query that targets a whole bunch of different fields with appropriate weights - `c#` will weight highly in the tags of a job listing. Here's how it looks in pseudo-code:
+2. Pass that AST to our Elastic visitor. Our Elastic visitor maintains a mapping of modifier names and how to translate them into an Elastic query. For example the `remote` modifier accepts a `bool` operand - in the visitor we map this to the `IsRemote` field in Elastic and a `term` query accepting a `bool` value. Bare text values are generally mapped to a `multi_match` query that targets a whole bunch of different fields with appropriate weights - `c#` will weight highly in the tags of a job listing. Here's how it looks in pseudo-code:
 
 ```c#
 Visit(QueryNode)
@@ -347,7 +308,7 @@ Visit(QueryNode)
 }
 ```
 
-We then eliminate unnecessary duplication - we don't need the nested `must` queries and we end up with the following JSON:
+3. We then eliminate unnecessary duplication - we don't need the nested `must` queries and we end up with the following JSON:
 
 ```json
 {
@@ -366,7 +327,7 @@ We then eliminate unnecessary duplication - we don't need the nested `must` quer
 }
 ```
 
-Finally, we use that as the `query` parameter of a query or count operation!
+4. Finally, we use that as the `query` parameter of a query or count operation to Elasticsearch!
 
 # Next time...
 
