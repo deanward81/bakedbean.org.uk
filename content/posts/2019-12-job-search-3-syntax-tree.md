@@ -1,6 +1,6 @@
 ---
 title: "Building Stack Overflow Job Search - Transforming Queries"
-date: 2019-11-26T00:00:00Z
+date: 2019-12-03T00:00:00Z
 tags: [.net, jobs, stack-overflow]
 draft: true
 images: [img/job-search-cover.png]
