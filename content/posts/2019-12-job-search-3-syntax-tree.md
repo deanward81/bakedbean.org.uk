@@ -2,7 +2,6 @@
 title: "Building Stack Overflow Job Search - Transforming Queries"
 date: 2019-12-03T00:00:00Z
 tags: [.net, jobs, stack-overflow]
-draft: true
 images: [img/job-search-cover.png]
 ---
 [Last time](2019-05-job-search-2-parsing) we talked about how we built a parser that can take a string input (written in Jobs Query Language or JQL) and parse it into an abstract syntax tree (AST) representing the query.
