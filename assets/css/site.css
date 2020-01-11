@@ -85,6 +85,18 @@ hr {
     .menu {
         display: none;
     }
+}
 
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 5px;
+    border-collapse: collapse;
+    border: 1px solid rgb(170, 170, 170)
 }
 /* purgecss end ignore */
