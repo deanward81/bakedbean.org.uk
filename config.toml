@@ -12,6 +12,9 @@ enableEmoji = true
 googleAnalytics = "UA-34429122-1"
 disqusShortname = "bakedbean-org-uk"
 
+[markup.goldmark.renderer]
+unsafe= true
+
 [params]
   author = "Dean Ward"
   description = "Technical blog covering all things .NET and goings on at Stack Overflow"
