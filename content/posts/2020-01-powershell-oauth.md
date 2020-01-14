@@ -12,9 +12,11 @@ At Stack we've written and maintain a set of scripts named "Dev-Local-Setup" tha
 
 We have a bunch of shared testing data that we store on a file share accessible over the VPN and we also synchronize to Google Drive to facilitate quick downloads for an audience that is spread all over the globe (downloading things from an NY-based data center can be sloooow when you're in Australia!).
 
-Google Drive requires authentication in order to allow things to be downloaded so we have configured our scripts as an application in Google and use OAuth to obtain an access token whenever somebody needs to download resources stored there. If you search around the web you'll find plenty of "solutions" to this issue, but most of them want you to obtain an access token and embed it in your script. I cannot stress what a _terrible_ idea this is - never store secrets in source control, not to mention that the access token is tied to whoever writes the script.
+Google Drive requires authentication in order to allow things to be downloaded so we have configured our scripts as an application in Google and use OAuth to obtain an access token whenever somebody needs to download resources stored there.
 
-Instead we did the following:
+If you search around the web you'll find plenty of "solutions" to this issue, but most of them want you to obtain an access token and embed it in your script. I cannot stress what a _terrible_ idea this is - never store secrets in source control, not to mention that the access token is tied to whoever writes the script. It's probably worth mentioning that if you need to fully automate script access to Google APIs I'd suggest looking into service accounts and passing the relevant credentials from the environment that runs the script instead. Our approach is useful for when the script is used interactively.
+
+Here's how we used to do things:
 
  - Import the WinForms types into our PowerShell script
  - Construct a WinForms `Form` and embed a `WebBrowser` object in it
