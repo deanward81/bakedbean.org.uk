@@ -2,13 +2,14 @@
   publish = "public"
   command = "npm i -g postcss-cli && npm i && hugo --gc --minify"
 
-[context.production.environment]
-  HUGO_VERSION = "0.51"
-  HUGO_ENV = "production"
+[build.environment]
+  HUGO_VERSION = "0.71.0"
   HUGO_ENABLEGITINFO = "true"
+  RUBY_VERSION = "2.6.2"
+  NODE_VERSION = "12.16.3"
+
+[context.production.environment]
+  HUGO_ENV = "production"
 
 [context.deploy-preview]
   command = "npm i -g postcss-cli && npm i && hugo  --gc --minify --buildFuture --buildDrafts -b $DEPLOY_PRIME_URL"
-
-[context.deploy-preview.environment]
-  HUGO_VERSION = "0.51"
