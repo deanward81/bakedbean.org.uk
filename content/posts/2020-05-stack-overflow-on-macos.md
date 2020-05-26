@@ -1,6 +1,6 @@
 ---
 title: "Developing Stack Overflow on MacOS"
-date: 2020-05-26T20:00:00Z
+date: 2020-05-26T18:30:00Z
 tags: [powershell, .net-core, stack-overflow, macos, yarp, reverse-proxy]
 images: [img/stack-overflow-on-macos-cover.png]
 ---
