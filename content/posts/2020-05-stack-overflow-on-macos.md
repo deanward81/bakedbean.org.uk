@@ -236,7 +236,7 @@ All of this means that there is a long-lived web server that is started when the
 <img src="/img/stack-overflow-on-macos-3.png" width=640 alt="Dev-Local-Setup on MacOS"><br/>
 <sub style="color:lightgray">KestrelProxy UI</sub>
 
-## What's Next?
+## What's Next?
 
 We have some developers and designers using this day-to-day, so we're hoping it gets battle-tested reasonably quickly. I'd like to get the KestrelProxy bits upto GitHub for other people to play with soon but need to remove the pieces that are very specific to us first!
 
