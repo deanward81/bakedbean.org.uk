@@ -273,8 +273,7 @@ This code configures our `global.json` source (with any env and command line ove
 
 > `Server=${globals:SqlServer};Database=MyDatabase;User ID=${secrets:   SqlUser};Password=${secrets:SqlPassword}`
 
-It is now abundantly obvious that `SqlUser` and `SqlPassword` should be sourced from a secret store and that service endpoints come from the global  
-environment.
+It is now abundantly obvious that `SqlUser` and `SqlPassword` should be sourced from a secret store and that service endpoints come from the global environment.
 
 ## Wrapping Up
 
