@@ -2,7 +2,7 @@
 title: "Fun with IConfiguration"
 date: 2021-01-19T15:00:00Z
 tags: [.net-core, configuration, stack-overflow, azure, keyvault, appconfig]
-images: [img/dev-local-setup-cover.png]
+images: [img/iconfiguration-cover.png]
 ---
 
 These days a .NET application is typically configured at startup using an extensible API known as thr [configuration builder](https://docs.microsoft.com/en-us/dotnet/core/extensions/configuration-providers) API. This allows the use of arbitrary sources of configuration - typically, out of the box, that means environment variables, command line args and JSON files (e.g. `appsettings.json`) but can also mean more "exotic" sources; anything from INI files to a SQL database to a secure secret store.
