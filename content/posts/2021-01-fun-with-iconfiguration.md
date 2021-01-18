@@ -199,7 +199,7 @@ We then allow those sources to be overridden by environment variables and comman
 
 // secrets.json
 {
-    "SqlUser": "myapp-readwrite";
+    "SqlUser": "myapp-readwrite",
     "SqlPassword": "Password123!"
 }
 ```
