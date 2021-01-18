@@ -78,7 +78,7 @@ In Stack Overflow we use the following order of precedence when defining the pro
  1. Environment variable
  1. Command line args
  
-`appsettings.json` is generally configured with barebones defaults, and mostly empty values. Some of those  are then overridden with actual values in `appsettings.{environment}.json`. These are either "Local" configuration used for local development, or configurations written at deployment time for non-local environments. Pretty standard stuff! 
+`appsettings.json` is generally configured with barebones defaults, and mostly empty values. Some of those are then overridden with actual values in `appsettings.{environment}.json`. These are either "Local" configuration values used for local development, or configurations written at deployment time for non-local environments. Pretty standard stuff! 
 
 Where things get a little bit quirky is with `environmentsettings.{environment}.json`. For that we need a little bit of history...
 
