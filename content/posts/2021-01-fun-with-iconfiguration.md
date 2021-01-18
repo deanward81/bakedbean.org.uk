@@ -9,7 +9,32 @@ These days a .NET application is typically configured at startup using an extens
 
 ## How it works
 
-At its most basic a configuration provider is expected to provide access to the values stored within it by key. Keys can contain zero or more colons which are used to indicate nesting. Let's take the JSON provider as an example: 
+When defining an application's configuration sources the individual providers are added using a fluent syntax. Here's a simple example of defining a few configuration providers in an application's `Program.cs`:
+
+
+```c#
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration(
+                (hostingContext, config) =>
+                {
+                    config
+                        .AddJsonFile("appsettings.json")
+                        .AddEnvironmentVariables()
+                        .AddCommandLine();
+                }
+            )
+            .UseStartup<Startup>()
+            .Build()
+            .Run();
+    }
+}
+```
+
+At its most basic a configuration provider is expected to provide access to the values stored within it by key. Keys can contain zero or more colons which are used to indicate nesting. Let's take the JSON provider as an example (`appsettings.json` in our code snippet above):
 
 ```json
 {
@@ -41,32 +66,7 @@ Kestrel:Endpoints:Https:Url=https://+/
 
 Here we can see that each level of nesting in the JSON is delimited by a colon and each delimited part is the key of that section.
 
-When defining an application's configuration sources the individual providers are added using a fluent syntax. Here's a simple example of defining a few configuration providers in an application's `Program.cs`:
-
-
-```c#
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration(
-                (hostingContext, config) =>
-                {
-                    config
-                        .AddJsonFile("appsettings.json")
-                        .AddEnvironmentVariables()
-                        .AddCommandLine();
-                }
-            )
-            .UseStartup<Startup>()
-            .Build()
-            .Run();
-    }
-}
-```
-
-Providers added later can override keys defined in those defined earlier.  That means that a key of `EnableFeature` in the `appsettings.json` file can have its value overridden by an `ENABLEFEATURE` environment variable or `--enablefeature` command line argument.
+Providers added later can override keys defined in those defined earlier.  Using our code snippet above - a key of `EnableFeature` in the `appsettings.json` file is overridden by an `ENABLEFEATURE` environment variable or `--enablefeature` command line argument.
 
 ## Configuration in Stack Overflow
 
