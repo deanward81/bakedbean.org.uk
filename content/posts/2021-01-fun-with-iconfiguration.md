@@ -120,7 +120,7 @@ Whilst analyzing how site settings have been used within the codebase over the y
 
 This situation came about because, overall, our infrastructure is fairly static. Occasionally we add a server here and there, but we know that we have our dev and prod environments and that they more or less look the same - hence specifying a bunch of (overrideable) defaults in code is a safe(ish) assumption! However, once we start deploying things to more dynamic environments like containers or ephemeral environments spun up in Azure those assumptions no longer hold true!
 
-To solve this problem we decided to allow site settings to load their values using the following precedence;
+To solve this problem we decided to allow site settings to load their values using the following precedence:
 
  1. code-based defaults (global)
  1. application's `IConfiguration` (global)
