@@ -136,7 +136,7 @@ However, in the absence of equivalent services in the data centre (which we _wil
 
 Our use of both KeyVault & AppConfig is pretty simple. When an environment is provisioned in Azure using Terraform some global secrets such as SQL admin credentials and credentials to third party systems are written into KeyVault. Once that process has completed we run a bootstrap script that consumes some of those secrets and provisions our SQL accounts, shared secrets and introspects the environment to configure service endpoints. Any key/value pairs are persisted into KeyVault or AppConfig depending on the kind of value it is (secret/service metadata/etc).
 
-In the application we configure AppConfig & KeyVault providers using managed identity (hooray, no secrets in JSON!) which means we can consume `IConfiguration` in our site settings loader and dependent settings are configured appropriately.
+In the application we configure AppConfig & KeyVault providers using [managed identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (hooray, no secrets in JSON!) which means we can consume `IConfiguration` in our site settings loader and dependent settings are configured appropriately.
 
 However, we quickly discovered that having individual settings, potentially composed of other settings, becomes somewhat unmaintainable. Consider a connection string to SQL:
 
