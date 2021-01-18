@@ -269,7 +269,7 @@ public class Program
 }
 ```
 
-This code configures our `global.json` source (with any env and command line overrides) with the prefix `globals` and `secrets.json` with `secrets`. Our connection string in `appsetyings.json` now becomes:
+This code configures our `global.json` source (with any env and command line overrides) with the prefix `globals` and `secrets.json` with `secrets`. Our connection string in `appsettings.json` now becomes:
 
 > `Server=${globals:SqlServer};Database=MyDatabase;User ID=${secrets:   SqlUser};Password=${secrets:SqlPassword}`
 
@@ -277,9 +277,9 @@ It is now abundantly obvious that `SqlUser` and `SqlPassword` should be sourced 
 
 ## Wrapping Up
 
-We've found these approaches to suit the way we want to handle configuration in our .NET applications  and it greatly simplfies the management of configuration in more dynamic environments. We can trivially change settings in AppConfig or KeyVault and they propagate to runnibg applications without a reboot.
+We've found these approaches to suit the way we want to handle configuration in our .NET applications  and it greatly simplfies the management of configuration in more dynamic environments. We can trivially change settings in AppConfig or KeyVault and they propagate to running applications without a reboot.
 
-We've packaged the substitution and prefixing functionality into a NuGet package called `StackExchange.Utils.Configuration` that can be consumed in any .NET Core 3.1 or above application. Links are below, we hope you have fun using it!
+We've packaged the substitution and prefixing functionality into a NuGet package called `StackExchange.Utils.Configuration` that can be consumed in any .NET Core 3.1 or above application. Links are below, we hope you find it as useful as we have!
 
 GitHub: https://github.com/StackExchange/StackExchange.Utils
 NuGet: https://www.nuget.org/packages/StackExchange.Utils.Configuration/
