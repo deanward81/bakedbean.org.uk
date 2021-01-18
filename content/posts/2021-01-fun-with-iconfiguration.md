@@ -271,7 +271,7 @@ public class Program
 
 This code configures our `global.json` source (with any env and command line overrides) with the prefix `globals` and `secrets.json` with `secrets`. Our connection string in `appsettings.json` now becomes:
 
-> `Server=${globals:SqlServer};Database=MyDatabase;User ID=${secrets:   SqlUser};Password=${secrets:SqlPassword}`
+> `Server=${globals:SqlServer};Database=MyDatabase;User ID=${secrets:SqlUser};Password=${secrets:SqlPassword}`
 
 It is now abundantly obvious that `SqlUser` and `SqlPassword` should be sourced from a secret store and that service endpoints come from the global environment.
 
