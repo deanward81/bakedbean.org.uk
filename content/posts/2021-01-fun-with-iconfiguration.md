@@ -1,6 +1,6 @@
 ---
 title: "Fun with IConfiguration"
-date: 2021-01-19T15:00:00Z
+date: 2021-01-19T14:00:00Z
 tags: [.net-core, configuration, stack-overflow, azure, keyvault, appconfig]
 images: [img/iconfiguration-cover.png]
 ---
