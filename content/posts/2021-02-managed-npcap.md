@@ -17,13 +17,20 @@ Turns out AirDrop uses a protocol called Apple Wireless Direct Link (AWDL) and a
 
 However OWL is written to work on MacOS and Linux - it makes use of `libpcap` and various libraries that only work on those platforms.
 
-Under the hood OWL creates a virtual network adapter and uses raw frame manipulation from userspace code to talk to the underlying network stack. The project has a [great diagram](https://github.com/seemoo-lab/owl#architecture) detailing their interactions with the different parts of tbe system.
+Under the hood OWL uses `libpcap` to create a virtual network adapter and uses raw frame manipulation from userspace code to talk to the underlying network stack. The project has a [great diagram](https://github.com/seemoo-lab/owl#architecture) detailing their interactions with the different parts of the system.
 
-To get this whole shebang working under Windows we need a similar virtual device that we can use to mess with raw frames. Windows has APIs to do this but, frankly, they're hard to work with because of driver signing requirements. [WireGuard](https://www.wireguard.com) found these requirements to be a bit much so they released an open source library called [Wintun](https://www.wintun.net) that allows userspace virtual network devices to be created. Yay!
+To get this whole shebang working under Windows we need a similar approach of capturing and manipulating raw network packets. I recalled that Wireshark used to install a packet capture driver that implemented the NDIS interfaces provided by Windows. Turns out the original way it did this was with [Winpcap](https://www.winpcap.org/) but there's a note saying that it has been deprecated in favour of [npcap](https://nmap.org/npcap/) which is part of the nmap project. Sadly the licensing for npcap is a little bit expensive if I felt like distributing this thing on the Windows Store - if that ever happens I'd probably consider writing a TAP driver much like what OpenVPN uses (see their [TAP driver repo](https://github.com/OpenVPN/tap-windows6)).
 
-Wintun is shipped as a DLL for various CPU architectures and they provide their API as a [C header file](https://git.zx2c4.com/wintun/tree/api/wintun.h). Typical usage involves dynamically loading the DLL and then using `GetProcAddress` to get a pointer to each of the functions in the API. In .NET land that means using [P/Invoke](https://docs.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke) to perform the interop and marshalling between native and .NET types for us. To do so we need to break down the API into a set of .NET P/Invoke signatures that we can use to interact with Wintun.
+I should note that, prior to reading the OWL publications, I was under the impression that this might be implemented using something like [Wintun](https://www.wintun.net). This is similar in many ways to npcap but it works uses a TUN driver rather than a TAP one. TUN drivers operate at layer 3 of the OSI stack whereas TAP drivers operate at layer 2 - [wikipedia](https://en.wikipedia.org/wiki/TUN/TAP) has a nice diagram illustrating the differences. To implement AWDL we need to be able to manipulate radiotap and 802.11 on the WLAN interface that we are connected to - these are transport layer (i.e. L2) concerns so we need to use something that operates at that layer.
 
-First task then: turn the Wintun header file into P/Invoke method and type definitions in C#. Let's get to it!
+npcap is shipped as an installer that needs to be run in order to use it. The installer configures the underlying network driver. For our purposes we need to install it with the "Support raw 802.11 traffic (and monitor mode) for wireless adapters" option switched on:
+
+<img src="/img/managed-npcap-1.png" width=640 alt="Installing npcap"><br/>
+<sub style="color:lightgray">Installing npcap</sub>
+
+I was about to sit down and write the [P/Invoke](https://docs.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke) code necessary to get .NET talking to this native library. That usually involves repetitive dissection of the header files provided with the library to construct the appropriate type signatures but, thankfully, the hard work has already been done by the maintainers of the [SharpPcap](https://github.com/chmorgan/sharppcap). This library provides us with a way of initiating a packet capture and manipulating packets as we see fit. Yay!
+
+Additionally, there's [Packet.NET](https://github.com/chmorgan/packetnet) which provides a way to parse the raw packets that are being captured. This should be very helpful in allowing us to put together 
 
 ## Diving into code
 
