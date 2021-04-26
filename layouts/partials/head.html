@@ -13,3 +13,6 @@
 {{ $syntaxCss := resources.Get "css/syntax.css" }}
 {{ $style := slice $bootstrapCss $iconCss $siteCss $syntaxCss | resources.Concat "css/all.css" | resources.PostCSS (dict "noMap" true) | resources.Minify | resources.Fingerprint "sha512"}}
 <link rel="stylesheet" href="{{ $style.Permalink | relURL }}" integrity="{{ $style.Data.Integrity }}">
+{{ with .OutputFormats.Get "rss" -}}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+{{ end -}}
