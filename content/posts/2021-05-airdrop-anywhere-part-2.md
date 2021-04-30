@@ -2,7 +2,7 @@
 title: "AirDrop Anywhere - Part 2 - Writing some code"
 date: 2021-05-04T15:00:00Z
 tags: [.net, networking, airdrop, apple]
-images: [img/iconfiguration-cover.png]
+images: [img/airdrop-anywhere-cover.png]
 ---
 
 > This is part 2 of a series of posts:
