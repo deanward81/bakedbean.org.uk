@@ -6,8 +6,8 @@ images: [img/iconfiguration-cover.png]
 ---
 
 > This is part 2 of a series of posts:
-> - [Part 1 - Introduction](2021-05-airdrop-anywhere-part-1)
-> - [Part 2 - Writing some code](2021-05-airdrop-anywhere-part-2)
+> - [Part 1 - Introduction](/posts/2021-05-airdrop-anywhere-part-1)
+> - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
 > - [GitHub](https://github.com/deanward81/AirDropAnywhere) - **NOTE** still work in progress!
 
 
