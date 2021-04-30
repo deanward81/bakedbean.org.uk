@@ -75,7 +75,7 @@ void StopAWDLBrowsing() {
 }
  ```
 
- I've taken a similar approach - [`libnative.m`](https://github.com/deanward81/tree/main/AirDropAnywhere/src/AirDropAnywhere.Core/libnative.m) contains code similar to above. I've added a `BeforeBuild` target in `AirDropAnywhere.Core.csproj` that runs `clang` to compile `libnative.m` to `libnative.so` and then used P/Invoke to execute the `StartAWDLBrowsing` and `StopAWDLBrowsing` functions. This instructs the OS to wake-up AWDL so we can receive traffic on the `awdl0` interface.
+ I've taken a similar approach - [`libnative.m`](https://github.com/deanward81/AirDropAnywhere/blob/main/src/AirDropAnywhere.Core/libnative.m) contains code similar to above. I've added a `BeforeBuild` target in `AirDropAnywhere.Core.csproj` that runs `clang` to compile `libnative.m` to `libnative.so` and then used P/Invoke to execute the `StartAWDLBrowsing` and `StopAWDLBrowsing` functions. This instructs the OS to wake-up AWDL so we can receive traffic on the `awdl0` interface.
 
 2. Next we need to allow our sockets to talk using AWDL - in MacOS we need to configure some socket options that notify the OS that we want to do be able to use `awdl0`. That means calling the following on whatever sockets need to do so:
 
