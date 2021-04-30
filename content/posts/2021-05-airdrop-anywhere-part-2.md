@@ -8,7 +8,8 @@ images: [img/iconfiguration-cover.png]
 > This is part 2 of a series of posts:
 > - [Part 1 - Introduction](/posts/2021-05-airdrop-anywhere-part-1)
 > - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
-> - [GitHub](https://github.com/deanward81/AirDropAnywhere) - **NOTE** still work in progress!
+> - [GitHub (mDNS bits)](https://github.com/deanward81/AirDropAnywhere/tree/2021-05-04-mdns)
+> - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
 
 [Last time](2021-04-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device or Linux with [OWL](https://owlink.org).
