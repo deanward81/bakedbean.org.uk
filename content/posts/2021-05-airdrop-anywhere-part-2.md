@@ -12,7 +12,7 @@ images: [img/airdrop-anywhere-cover.jpg]
 > - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
 
-[Last time](2021-04-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device or Linux with [OWL](https://owlink.org).
+[Last time](/posts/2021-04-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device or Linux with [OWL](https://owlink.org).
 
 ## Pre-requisites
 
