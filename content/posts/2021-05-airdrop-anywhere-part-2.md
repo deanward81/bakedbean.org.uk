@@ -111,10 +111,10 @@ After debugging through the `net-mdns` code base I found a couple of empty `catc
 
 As a result I've taken key parts of `net-mdns`, re-used the excellent [net-dns](https://github.com/richardschneider/net-dns) library for handling the various DNS record types that are needed for mDNS and implemented a `MulticastDnsServer` that addresses the specific needs of binding to the `awdl0` interface:
 
- - removal of service discovery and querying. We only need to advertise `_airdrop._tcp` with the relevant SRV and TXT records so this implementation focuses on the advertisement bits of mDNS
+ - removal of service discovery and querying. We only need to advertise `_airdrop._tcp` with the relevant SRV, PTR and TXT records so this implementation focuses on the advertisement bits of mDNS
  - it handles setting the right socket options for AWDL
  - mDNS multicast responses are sent over the same interface that the request was received on - something which AWDL is particularly sensitive to.
- - it's async throughout - `net-mdns` had a number of sync-over-async patterns in the code that could cause deadlocks.
+ - it's async throughout and uses `Socket` rather than `UdpClient` - `net-mdns` had a number of sync-over-async patterns in the code that could cause deadlocks.
 
 And the result is.... _it works_! 
 
