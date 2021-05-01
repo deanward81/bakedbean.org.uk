@@ -12,7 +12,7 @@ images: [img/airdrop-anywhere-cover.jpg]
 > - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
 
-[Last time](/posts/2021-04-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device or Linux with [OWL](https://owlink.org).
+[Last time](/posts/2021-04-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device (which supports AWDL natively) or Linux with [OWL](https://owlink.org).
 
 ## Pre-requisites
 
@@ -44,9 +44,15 @@ It's also incredibly useful to be able to inspect network traffic with some of t
 
 ## Building the system
 
+The folks at the [Secure Mobile Networking Lab](https://github.com/seemoo-lab) have a really great diagram detailing the lifecycle of an AirDrop interaction by a user and how it translates to network requests on page 4 of their paper [A Billion Open Interfaces for Eve and Mallory: MitM, DoS, and Tracking Attacks on iOS and macOS Through Apple Wireless Direct Link](https://www.usenix.org/system/files/sec19-stute.pdf):
+
+<img src="/img/airdrop-anywhere-2.png" width=413 alt="AirDrop Protocol Interactions"><br/>
+<sub style="color:lightgray">AirDrop Protocol Interactions from the OWL project</sub>
+
+
 To help visualize how I anticipate this working I drew a simple diagram of the system and how it interacts with the various devices. As we work through implementation I'll refer back to this diagram and refine parts of it as the problems we face become clear!
 
-<img src="/img/airdrop-anywhere-2.png" width=480 alt="AirDrop Anywhere Architecture"><br/>
+<img src="/img/airdrop-anywhere-3.png" width=480 alt="AirDrop Anywhere Architecture"><br/>
 <sub style="color:lightgray">AirDrop Anywhere Architecture</sub>
 
 We'll start by implementing the two components that allow us to communicate with devices using AirDrop - mDNS and the AirDrop HTTP API. To do so we'll spin up an .NET Core `WebHost` and configure the endpoints needed for the HTTP API and an `IHostedService` that will manage the lifetime of our mDNS service. Off we go!
@@ -112,7 +118,7 @@ As a result I've taken key parts of `net-mdns`, re-used the excellent [net-dns](
 
 And the result is.... _it works_! 
 
-<img src="/img/airdrop-anywhere-3.png" width=480 alt="Wireshark mDNS Traffic"><br/>
+<img src="/img/airdrop-anywhere-4.png" width=480 alt="Wireshark mDNS Traffic"><br/>
 <sub style="color:lightgray">Wireshark mDNS Traffic</sub>
 
 Here we can see traffic to the IPv6 multicast `ff02:fb` address from my iPhone on the `awdl0` interface. The row underlined in red is our call to `StartAWDLBrowsing` - this is what initiates AWDL on my Macbook. Next, the rows underlined in orange are an mDNS query for `_airdrop._tcp` from my iPhone, followed by an mDNS response from my Macbook answering the query.
@@ -160,4 +166,3 @@ You can find all the code for the mDNS implementation [here](https://github.com/
 
 ## Next time...
 This post is already getting pretty lengthy so I'll wrap it up for now. Next time we'll go into implementing the HTTP API for AirDrop. This should be relatively simple - the [OpenDrop](https://github.com/seemoo-lab/opendrop) and [PrivateDrop](https://github.com/seemoo-lab/privatedrop) projects have implementations in Python and Swift that we can use as a basis for a Kestrel-based implementation.
-
