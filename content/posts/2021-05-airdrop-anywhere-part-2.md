@@ -49,13 +49,12 @@ The folks at the [Secure Mobile Networking Lab](https://github.com/seemoo-lab) h
 <img src="/img/airdrop-anywhere-2.png" width=413 alt="AirDrop Protocol Interactions"><br/>
 <sub style="color:lightgray">AirDrop Protocol Interactions from the OWL project</sub>
 
-
-To help visualize how I anticipate this working I drew a simple diagram of the system and how it interacts with the various devices. As we work through implementation I'll refer back to this diagram and refine parts of it as the problems we face become clear!
+We don't need to handle any of the Bluetooth interactions, but we do need to be able to handle mDNS requests and the HTTPS services for AirDrop. To help visualize how I anticipate this working I drew a simple diagram of the system and how it interacts with the various devices. As we work through implementation I'll refer back to this diagram and refine parts of it as the problems we face become clear!
 
 <img src="/img/airdrop-anywhere-3.png" width=480 alt="AirDrop Anywhere Architecture"><br/>
 <sub style="color:lightgray">AirDrop Anywhere Architecture</sub>
 
-We'll start by implementing the two components that allow us to communicate with devices using AirDrop - mDNS and the AirDrop HTTP API. To do so we'll spin up an .NET Core `WebHost` and configure the endpoints needed for the HTTP API and an `IHostedService` that will manage the lifetime of our mDNS service. Off we go!
+We'll start by implementing the two components that allow us to communicate with devices using AirDrop - mDNS and the AirDrop HTTP API. To do so we'll spin up a .NET Core `WebHost` and configure the endpoints needed for the HTTP API and an `IHostedService` that will manage the lifetime of our mDNS service. Off we go!
 
 ### mDNS
 To allow AirDrop-compatible devices to find our implementation of AirDrop we need to advertise our service and its related SRV and TXT records over mDNS. Richard Schneider's [mDNS implementation](https://github.com/richardschneider/net-mdns) looks like it would fit the bill here, but, after implementing the relevant pieces in `AirDropAnywhere.Core`, I found that Wireshark was not picking up mDNS responses from the service to queries sent from my iOS-based devices over the `awdl0` interface.
