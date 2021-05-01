@@ -162,7 +162,7 @@ Timestamp     A/R    Flags if Hostname                               Address    
 ^C
 ```
 
-You can find all the code for the mDNS implementation [here](https://github.com/deanward81/AirDropAnywhere/tree/main/src/AirDropAnywhere.Core/MulticastDns).
+You can find all the code for the mDNS implementation [here](https://github.com/deanward81/AirDropAnywhere/tree/main/src/AirDropAnywhere.Core/MulticastDns). There's still some rough edges (I've done little around TTLs and there are no tests yet) but they'll get tidied up as we go.
 
 ## Next time...
 This post is already getting pretty lengthy so I'll wrap it up for now. Next time we'll go into implementing the HTTP API for AirDrop. This should be relatively simple - the [OpenDrop](https://github.com/seemoo-lab/opendrop) and [PrivateDrop](https://github.com/seemoo-lab/privatedrop) projects have implementations in Python and Swift that we can use as a basis for a Kestrel-based implementation.
