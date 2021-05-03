@@ -11,6 +11,11 @@ code {
     color: gray;
 }
 
+blockquote {
+    border-left: solid;
+    padding: 4px 8px 4px 8px;
+}
+
 .navbar-toggler {
     border-color: white !important;
     color: white;

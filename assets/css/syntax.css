@@ -1,5 +1,7 @@
 /* purgecss start ignore */
-/* Background */ .chroma { color: #d0d0d0; background-color: #202020 }
+/* Background */ div.chroma { padding: 10px; }
+/* Background */ pre.chroma { margin: 0; }
+/* Background */ .chroma { color: #d0d0d0; background-color: #202020; }
 /* Error */ .chroma .err { color: #a61717; background-color: #e3d2d2 }
 /* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
 /* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; width: auto; overflow: auto; display: block; }
