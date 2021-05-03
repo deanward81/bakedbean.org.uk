@@ -3,6 +3,7 @@ title: "AirDrop Anywhere - Part 1 - Introduction"
 date: 2021-05-03T15:00:00Z
 tags: [.net, networking, airdrop, apple]
 images: [img/airdrop-anywhere-cover.jpg]
+summary: "Part one of the journey towards implementing AirDrop on any platform using .NET Core. In this instalment we dig into the problem and poke at some potential solutions."
 ---
 
 > This is part 1 of a series of posts:

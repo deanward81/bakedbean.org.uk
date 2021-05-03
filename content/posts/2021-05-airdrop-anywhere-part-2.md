@@ -3,14 +3,14 @@ title: "AirDrop Anywhere - Part 2 - Writing some code"
 date: 2021-05-04T15:00:00Z
 tags: [.net, networking, airdrop, apple]
 images: [img/airdrop-anywhere-cover.jpg]
+summary: "Part one of the journey towards implementing AirDrop on any platform using .NET Core. This time we talk about the implementation of the base services need to support AirDrop."
 ---
 
 > This is part 2 of a series of posts:
 > - [Part 1 - Introduction](/posts/2021-05-airdrop-anywhere-part-1)
 > - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
-> - [GitHub (mDNS bits)](https://github.com/deanward81/AirDropAnywhere/tree/2021-05-04-mdns)
-> - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
-
+>     - [GitHub (mDNS bits)](https://github.com/deanward81/AirDropAnywhere/tree/2021-05-04-mdns)
+>     - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
 [Last time](/posts/2021-04-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device (which supports AWDL natively) or Linux with [OWL](https://owlink.org).
 
@@ -19,13 +19,8 @@ images: [img/airdrop-anywhere-cover.jpg]
 ### Project structure
 I've decided to structure all of this as a "Core" project that'll contain the bulk of the AirDrop implementation. This will be able to be plugged into any .NET Core application in order to provide AirDrop services and each application can provide an implementation of an interface in order to handle file sending and receiving. Our project hierarchy will look like this:
 
-```
-|---AirDropAnywhere.Core
-    |
-    |--AirDropAnywhere.Cli
-    |
-    |--AirdropAnywhere.Web
-```
+<img src="/img/airdrop-anywhere-2.png" width=413 alt="AirDropAnywhere Project Structure"><br/>
+<sub style="color:lightgray">AirDropAnywhere Project Structure</sub>
 
 `AirDropAnywhere.Core` will contain all our shared services (e.g. mDNS advertisements, core AirDrop HTTP API) and the means to configure them in a `WebHost`.
 
@@ -46,12 +41,12 @@ It's also incredibly useful to be able to inspect network traffic with some of t
 
 The folks at the [Secure Mobile Networking Lab](https://github.com/seemoo-lab) have a really great diagram detailing the lifecycle of an AirDrop interaction by a user and how it translates to network requests on page 4 of their paper [A Billion Open Interfaces for Eve and Mallory: MitM, DoS, and Tracking Attacks on iOS and macOS Through Apple Wireless Direct Link](https://www.usenix.org/system/files/sec19-stute.pdf):
 
-<img src="/img/airdrop-anywhere-2.png" width=413 alt="AirDrop Protocol Interactions"><br/>
+<img src="/img/airdrop-anywhere-3.png" width=413 alt="AirDrop Protocol Interactions"><br/>
 <sub style="color:lightgray">AirDrop Protocol Interactions from the OWL project</sub>
 
 We don't need to handle any of the Bluetooth interactions, but we do need to be able to handle mDNS requests and the HTTPS services for AirDrop. To help visualize how I anticipate this working I drew a simple diagram of the system and how it interacts with the various devices. As we work through implementation I'll refer back to this diagram and refine parts of it as the problems we face become clear!
 
-<img src="/img/airdrop-anywhere-3.png" width=480 alt="AirDrop Anywhere Architecture"><br/>
+<img src="/img/airdrop-anywhere-4.png" width=480 alt="AirDrop Anywhere Architecture"><br/>
 <sub style="color:lightgray">AirDrop Anywhere Architecture</sub>
 
 We'll start by implementing the two components that allow us to communicate with devices using AirDrop - mDNS and the AirDrop HTTP API. To do so we'll spin up a .NET Core `WebHost` and configure the endpoints needed for the HTTP API and an `IHostedService` that will manage the lifetime of our mDNS service. Off we go!
@@ -117,7 +112,7 @@ As a result I've taken key parts of `net-mdns`, re-used the excellent [net-dns](
 
 And the result is.... _it works_! 
 
-<img src="/img/airdrop-anywhere-4.png" width=480 alt="Wireshark mDNS Traffic"><br/>
+<img src="/img/airdrop-anywhere-5.png" width=480 alt="Wireshark mDNS Traffic"><br/>
 <sub style="color:lightgray">Wireshark mDNS Traffic</sub>
 
 Here we can see traffic to the IPv6 multicast `ff02:fb` address from my iPhone on the `awdl0` interface. The row underlined in red is our call to `StartAWDLBrowsing` - this is what initiates AWDL on my Macbook. Next, the rows underlined in orange are an mDNS query for `_airdrop._tcp` from my iPhone, followed by an mDNS response from my Macbook answering the query.
