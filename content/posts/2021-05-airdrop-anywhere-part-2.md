@@ -3,7 +3,7 @@ title: "AirDrop Anywhere - Part 2 - Writing some code"
 date: 2021-05-04T15:00:00Z
 tags: [.net, networking, airdrop, apple]
 images: [img/airdrop-anywhere-cover.jpg]
-summary: "Part one of the journey towards implementing AirDrop on any platform using .NET Core. This time we talk about the implementation of the base services need to support AirDrop."
+summary: "Part two of the journey towards implementing AirDrop on any platform using .NET Core. This time we talk about the implementation of the base services needed to support AirDrop."
 ---
 
 > This is part 2 of a series of posts:
