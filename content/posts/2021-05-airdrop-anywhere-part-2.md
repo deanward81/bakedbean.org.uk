@@ -10,9 +10,10 @@ summary: "Part two of the journey towards implementing AirDrop on any platform u
 > - [Part 1 - Introduction](/posts/2021-05-airdrop-anywhere-part-1)
 > - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
 >     - [GitHub (mDNS bits)](https://github.com/deanward81/AirDropAnywhere/tree/2021-05-04-mdns)
->     - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
+> - [Part 3 - Receiving files](/posts/2021-05-airdrop-anywhere-part-3)
+> - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
-[Last time](/posts/2021-04-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device (which supports AWDL natively) or Linux with [OWL](https://owlink.org).
+[Last time](/posts/2021-05-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device (which supports AWDL natively) or Linux with [OWL](https://owlink.org).
 
 ## Pre-requisites
 
@@ -41,6 +42,7 @@ It's also incredibly useful to be able to inspect network traffic with some of t
 
 The folks at the [Secure Mobile Networking Lab](https://github.com/seemoo-lab) have a really great diagram detailing the lifecycle of an AirDrop interaction by a user and how it translates to network requests on page 4 of their paper [A Billion Open Interfaces for Eve and Mallory: MitM, DoS, and Tracking Attacks on iOS and macOS Through Apple Wireless Direct Link](https://www.usenix.org/system/files/sec19-stute.pdf):
 
+<a name="Interactions">
 <img src="/img/airdrop-anywhere-3.png" width=413 alt="AirDrop Protocol Interactions"><br/>
 <sub style="color:lightgray">AirDrop Protocol Interactions from the OWL project</sub>
 
