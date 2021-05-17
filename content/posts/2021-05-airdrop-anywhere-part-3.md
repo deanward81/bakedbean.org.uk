@@ -1,6 +1,6 @@
 ---
 title: "AirDrop Anywhere - Part 3 - Receiving files"
-date: 2021-05-17T15:00:00Z
+date: 2021-05-17T13:00:00Z
 tags: [.net, networking, airdrop, apple]
 images: [img/airdrop-anywhere-cover.jpg]
 summary: "Part three of the journey towards implementing AirDrop on any platform using .NET Core. This episode we cover receiving files from one Apple device to another using a .NET implementation of AirDrop."
