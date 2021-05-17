@@ -42,6 +42,7 @@ It's also incredibly useful to be able to inspect network traffic with some of t
 
 The folks at the [Secure Mobile Networking Lab](https://github.com/seemoo-lab) have a really great diagram detailing the lifecycle of an AirDrop interaction by a user and how it translates to network requests on page 4 of their paper [A Billion Open Interfaces for Eve and Mallory: MitM, DoS, and Tracking Attacks on iOS and macOS Through Apple Wireless Direct Link](https://www.usenix.org/system/files/sec19-stute.pdf):
 
+<a name="Interactions">
 <img src="/img/airdrop-anywhere-3.png" width=413 alt="AirDrop Protocol Interactions"><br/>
 <sub style="color:lightgray">AirDrop Protocol Interactions from the OWL project</sub>
 

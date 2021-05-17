@@ -17,11 +17,11 @@ In the [previous episode](/posts/2021-05-airdrop-anywhere-part-2) we talked abou
 
 ## How it works
 
-As detailed last time, AirDrop works by advertising the endpoint associated with an HTTPS listener, so we'll need something listening on HTTPS and have it implement the relevant API routes that AirDrop expects. So we need to know what the API surface looks like!
+From [last time](/posts/2021-05-airdrop-anywhere-part-2#Interactions) - AirDrop works by advertising the endpoint associated with an HTTPS listener. Right now we don't have _anything_ listening for requests - so we'll need something listening on HTTPS and have it implement the relevant API routes that AirDrop expects. To do so we need to know what the API surface looks like!
 
-Typically we'd use something like [Fiddler](https://www.telerik.com/fiddler) to intercept HTTPS traffic and decrypt it but, because AirDrop configures an ad-hoc connection over the AWDL interface, we can't realistically configure it to use our proxy. Our next option is to use [Wireshark](https://www.wireshark.org/) and configure it to decrypt TLS. Fortunately AirDrop supports self-signed certificates for whatever is listening on the HTTPS endpoint - so we can trivially use the ASP.NET Core Development Certificate stored in the keychain and configure Wireshark to use it. Then all we need to do is sniff packets on the listening device's AWDL interface...
+Typically to reverse engineer an API implemented over HTTPS we'd use something like [Fiddler](https://www.telerik.com/fiddler) to intercept HTTPS traffic and decrypt it, but because AirDrop configures an ad-hoc connection over the AWDL interface, we don't have anyway to force it to route traffic via Fiddler. Our next option is to use [Wireshark](https://www.wireshark.org/) on the AWDL interface and configure it to decrypt TLS. Fortunately, AirDrop supports self-signed certificates for whatever is listening on the HTTPS endpoint - so we can trivially use the ASP.NET Core Development Certificate stored in the keychain and configure Wireshark to use it. Then all we need to do is sniff packets on the listening device's AWDL interface...
 
-However, other than for monitoring what's going on, we don't need to do this to work out the API surface! [PrivateDrop](https://github.com/seemoo-lab/privatedrop) & [OpenDrop](https://github.com/seemoo-lab/opendrop) both provide an implementation of the API that we can translate to the equivalent C#.
+However, other than for monitoring what's going on, we don't need to do this to work out the API surface! [PrivateDrop](https://github.com/seemoo-lab/privatedrop) and [OpenDrop](https://github.com/seemoo-lab/opendrop) both provide an implementation of the API that we can translate to the equivalent C#.
 
 ### API Endpoints
 
@@ -248,9 +248,9 @@ Now we can _read_ the thing that AirDrop sent us, let's see what we can do with 
 
 ### Understanding the request
 
-This payload represents a set of information that the sender knows about - notably the hashes of the sender's email address and phone number. This is used by AirDrop in "contact-only" receive mode to see if it knows the sender and allows the receiver to determine whether it should "expose" its details to them
+This payload represents a set of information that the sender knows about - notably the hashes of the sender's email address and phone number. This is used by AirDrop in "contact-only" receive mode to see if it knows the sender and allows the receiver to determine whether it should "expose" its details to them.
 
-Contact information is embedded within the plist we received above as an `NSData` instance. This is interpreted as an array of bytes and it turns out it's a PKCS7-signed payload, signed with Apple's root CA. .NET Core gives us the `SignedCms` class to validate the signature. To use it we need a copy of Apple's root CA public key which we can extract from KeyChain or, easier, just grab directly from [PrivateDrop](https://github.com/seemoo-lab/PrivateDrop-Base/tree/be54e158b3a8e3d86adfb804b4f54b308733bef8/Sources/PrivateDrop%20Base/Resources/Certificates) and embed it as a resource in `AirDropAnywhere.Core`. Here's the code to validate the payload (taken from [`DiscoverRequest.cs`](https://github.com/deanward81/AirDropAnywhere/blob/2021-05-17-receiving-files/src/AirDropAnywhere.Core/Models/DiscoverRequest.cs)):
+Contact information is embedded within the plist we received above as an `NSData` instance - effectively a binary blob. It turns out it's a [PKCS7](https://en.wikipedia.org/wiki/PKCS_7)-signed payload, signed with Apple's root CA. .NET Core gives us the `SignedCms` class to validate the signature. To use it we need a copy of Apple's root CA public key which we can extract from KeyChain or, easier, just grab directly from [PrivateDrop](https://github.com/seemoo-lab/PrivateDrop-Base/tree/be54e158b3a8e3d86adfb804b4f54b308733bef8/Sources/PrivateDrop%20Base/Resources/Certificates) and embed it as a resource in `AirDropAnywhere.Core`. Here's the code to validate the payload (taken from [`DiscoverRequest.cs`](https://github.com/deanward81/AirDropAnywhere/blob/2021-05-17-receiving-files/src/AirDropAnywhere.Core/Models/DiscoverRequest.cs)):
 
 ```c#
 /// <summary>
@@ -305,7 +305,7 @@ public class RecordData
 }
 ```
 
-I've decided not to operate in "contacts-only" mode so we don't need this - yet! I'll implement that part later - I'm more interested in actually receiving a file.
+Right now, I've decided not to implement "contacts-only" mode so we don't need this - yet! I _will_ implement that part later - for the moment I'm more interested in actually receiving a file.
 
 With that in mind, we'll validate that the data is legit (by calling `TryGetSenderRecordData`) but we'll simply return the `/Discover` response - a payload containing _our_ details - the name of the receiver and its capabilities:
 
@@ -340,6 +340,8 @@ After implementing this endpoint we can see that AirDrop now "sees" our service,
 
 <img src="/img/airdrop-anywhere-6.jpg" width=160 alt="Service in AirDrop"><br/>
 <sub style="color:lightgray">It's Alive!</sub>
+
+Next, we need to see if the receiver wants to receive the files we're sending...
 
 ## `/Ask`
 
@@ -485,4 +487,4 @@ Note that the current implementation is a security nightmare - it effectively al
 
 ## What's next?
 
-Now we have the ability to receive files from an Apple device it's time to define the interface that allows non-native clients to be discovered via our proxy. Next time we'll dig into what that interface looks like and how we'll hook it up so we can use it via a web interface. Enjoy!
+Now we have the ability to receive files from an Apple device our next task is to define the interface that allows non-native clients to be discovered via our proxy. Next time we'll dig into what that interface looks like and how we'll hook it up so we can use it via the CLI and an internally hosted site. Enjoy!
