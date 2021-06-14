@@ -300,6 +300,36 @@ There isn't anything particularly "magic" in this implementation - it is a simpl
 
 We should be able to take the same structure used here and trivially apply it to a client implemented in JS or Blazor running entirely in the browser.
 
+Here's a rough view of how it looks so far - this is the journey from iPhone to a Windows desktop via a Macbook Pro:
+
+<table style="border:0">
+  <tr>
+    <td style="border:0">
+      <img src="/img/airdrop-anywhere-10.jpg" width=160 alt="Sent from iPhone 1/2...">
+      <img src="/img/airdrop-anywhere-11.jpg" width=160 alt="Sent from iPhone 2/2...">
+    </td>
+    <td style="border:0">
+      <a href="/img/airdrop-anywhere-12.jpg" target="_blank">
+        <img src="/img/airdrop-anywhere-12.jpg" width=320 alt="...via macOS...">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td style="border:0;text-align:center"><sub style="color:lightgray">Sent from iPhone...</sub></td>
+    <td style="border:0;text-align:center"><sub style="color:lightgray">...via macOS...</sub></td>
+  </tr>
+  <tr>
+    <td style="border:0">
+      <a href="/img/airdrop-anywhere-13.png" target="_blank">
+        <img src="/img/airdrop-anywhere-13.png" width=320 alt="...to Windows!">
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td style="border:0;text-align:center"><sub style="color:lightgray">...to Windows!</sub></td>
+  </tr>
+</table>
+
 ## Next time
 
 Next up, I'll be implementing the client to have all of this running entirely in the browser. I've put together a list of things I plan to work on over the coming weeks in a [GitHub project in the AirDropAnywhere repo](https://github.com/deanward81/AirDropAnywhere/projects/1).
