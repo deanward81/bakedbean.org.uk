@@ -11,6 +11,7 @@ summary: "Part three of the journey towards implementing AirDrop on any platform
 > - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
 > - [Part 3 - Receiving files](/posts/2021-05-airdrop-anywhere-part-3)
 >     - [GitHub (File receiving bits)](https://github.com/deanward81/AirDropAnywhere/tree/2021-05-17-receiving-files)
+> - [Part 4 - Making it work on Windows](/posts/2021-06-airdrop-anywhere-part-4)
 > - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
 In the [previous episode](/posts/2021-05-airdrop-anywhere-part-2) we talked about the challenges I came across while implementing the mDNS advertisements necessary to support AirDrop. By the end of this episode we should be able to send a file from an Apple device to another Apple device running our service 🎉.

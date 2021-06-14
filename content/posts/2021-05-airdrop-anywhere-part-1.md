@@ -10,6 +10,7 @@ summary: "Part one of the journey towards implementing AirDrop on any platform u
 > - [Part 1 - Introduction](/posts/2021-05-airdrop-anywhere-part-1)
 > - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
 > - [Part 3 - Receiving files](/posts/2021-05-airdrop-anywhere-part-3)
+> - [Part 4 - Making it work on Windows](/posts/2021-06-airdrop-anywhere-part-4)
 
 Lately I've been frustrated at the pain of transferring files from an Apple device to Windows - when transferring between Apple devices it's dead simple using AirDrop. I know there are many applications out there that allow files to be transferred as simply between any platform, but they require installation on each device and it seems like unnecessary hassle. Ideally AirDrop would work natively with Windows, but I can't see Apple enabling that anytime soon!
 
