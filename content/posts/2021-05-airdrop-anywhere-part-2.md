@@ -11,6 +11,7 @@ summary: "Part two of the journey towards implementing AirDrop on any platform u
 > - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
 >     - [GitHub (mDNS bits)](https://github.com/deanward81/AirDropAnywhere/tree/2021-05-04-mdns)
 > - [Part 3 - Receiving files](/posts/2021-05-airdrop-anywhere-part-3)
+> - [Part 4 - Making it work on Windows](/posts/2021-06-airdrop-anywhere-part-4)
 > - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
 [Last time](/posts/2021-05-airdrop-anywhere-part-1) we broke down the problem of implementing AirDrop so that we can support sending and receiving files from devices that do not natively support AirDrop. After some to and fro we landed on an implementation that involves creating a "proxy" running on an Apple device (which supports AWDL natively) or Linux with [OWL](https://owlink.org).

@@ -11,6 +11,7 @@ summary: "Part three of the journey towards implementing AirDrop on any platform
 > - [Part 2 - Writing some code](/posts/2021-05-airdrop-anywhere-part-2)
 > - [Part 3 - Receiving files](/posts/2021-05-airdrop-anywhere-part-3)
 >     - [GitHub (File receiving bits)](https://github.com/deanward81/AirDropAnywhere/tree/2021-05-17-receiving-files)
+> - [Part 4 - Making it work on Windows](/posts/2021-06-airdrop-anywhere-part-4)
 > - [GitHub (latest)](https://github.com/deanward81/AirDropAnywhere/tree/main) - **NOTE** still work in progress!
 
 In the [previous episode](/posts/2021-05-airdrop-anywhere-part-2) we talked about the challenges I came across while implementing the mDNS advertisements necessary to support AirDrop. By the end of this episode we should be able to send a file from an Apple device to another Apple device running our service 🎉.
@@ -131,6 +132,8 @@ After spinning up the application, sniffing the AWDL interface using Wireshark a
 Well, I thought that would be the case - surely Kestrel has trivial extensibility points to mess with its underlying sockets? Turns out that isn't the case at all. Kestrel uses an implementation of the `IConnectionListenerFactory` interface called `SocketTransportFactory`. This is responsible for binding to the underlying transport and returning an `IConnectionListener`. I don't particularly want to implement all the plumbing that `SocketTransportFactory` does and, unfortunately, all of its internals are, ummmm, `internal`.
 
 Reflection to the rescue! Yes, this is terrible practice but it gets me where I need to be so I'll take it. Here's what I came up (again, abbreviated for the blog post - you can see the actual implementation [here](https://github.com/deanward81/AirDropAnywhere/blob/2021-05-17-receiving-files/src/AirDropAnywhere.Core/HttpTransport/AwdlSocketTransportFactory.cs));
+
+<a name="AwdlSocketTransportFactory">
 
 ```c#
 // Actual implementation: https://github.com/deanward81/AirDropAnywhere/blob/2021-05-17-receiving-files/src/AirDropAnywhere.Core/HttpTransport/AwdlSocketTransportFactory.cs
