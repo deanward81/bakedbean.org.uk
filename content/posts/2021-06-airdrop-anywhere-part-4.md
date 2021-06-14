@@ -300,7 +300,7 @@ There isn't anything particularly "magic" in this implementation - it is a simpl
 
 We should be able to take the same structure used here and trivially apply it to a client implemented in JS or Blazor running entirely in the browser.
 
-## What's next?
+## Next time
 
 Next up, I'll be implementing the client to have all of this running entirely in the browser. I've put together a list of things I plan to work on over the coming weeks in a [GitHub project in the AirDropAnywhere repo](https://github.com/deanward81/AirDropAnywhere/projects/1).
 
