@@ -133,6 +133,8 @@ Well, I thought that would be the case - surely Kestrel has trivial extensibilit
 
 Reflection to the rescue! Yes, this is terrible practice but it gets me where I need to be so I'll take it. Here's what I came up (again, abbreviated for the blog post - you can see the actual implementation [here](https://github.com/deanward81/AirDropAnywhere/blob/2021-05-17-receiving-files/src/AirDropAnywhere.Core/HttpTransport/AwdlSocketTransportFactory.cs));
 
+<a name="AwdlSocketTransportFactory">
+
 ```c#
 // Actual implementation: https://github.com/deanward81/AirDropAnywhere/blob/2021-05-17-receiving-files/src/AirDropAnywhere.Core/HttpTransport/AwdlSocketTransportFactory.cs
 internal class AwdlSocketTransportFactory : IConnectionListenerFactory

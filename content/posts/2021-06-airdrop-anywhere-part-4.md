@@ -1,6 +1,6 @@
 ---
 title: "AirDrop Anywhere - Part 4 - Making it work on Windows"
-date: 2021-06-14T17:20:00Z
+date: 2021-06-14T17:30:00Z
 tags: [.net, networking, airdrop, apple]
 images: [img/airdrop-anywhere-cover.jpg]
 summary: "Part four of the journey towards implementing AirDrop on any platform using .NET Core. This episode we cover receiving files on a non-Apple device from an Apple device via an intermediary using .NET."
@@ -74,7 +74,7 @@ public abstract class AirDropPeer
 
 This is fairly straightforward - there's a unique identifier for the peer, a display name and some methods to allow the AirDrop HTTP API to communicate with the peer. This is implemented as an abstract class rather than an interface because we need to manage the identifier in the framework - we use this as the host name in mDNS and AirDrop is particularly fussy about what characters it allows in the hostname. We simply use a random 12 character alpha-numeric identifier which satisfies AirDrop's requirements and means the implementor doesn't need to know about this detail.
 
-An implementation of `AirDropPeer` is provided by the underlying peering mechanism - in our case we're allowing clients to connect using SignalR over Websockets so we provide an implementation that layers upon SignalR's messaging protocol. When a peer connects to our server we register it so that the core pieces in `AirDropAnywhere.Core` are aware of its presence. Similarly when the peer disconnects we unregister it. That functionality is exposed on [`AirDropService`](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Core/AirDropService.cs):
+An implementation of `AirDropPeer` is provided by the underlying peering mechanism - in our case we're allowing clients to connect using [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr) over Websockets so we provide an implementation that layers upon its messaging protocol. When a peer connects to our server we register it so that the core pieces in `AirDropAnywhere.Core` are aware of its presence. Similarly when the peer disconnects we unregister it. That functionality is exposed on [`AirDropService`](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Core/AirDropService.cs):
 
 ```c#
 /// <summary>
@@ -127,7 +127,7 @@ Unregistration effectively does the opposite of registration - it removes any tr
 
 ## Peer Implementation
 
-We've discussed how peering is intended to work, so let's dive into the implementation details for peering using [SignalR](https://dotnet.microsoft.com/apps/aspnet/signalr). Out of the box SignalR provides connectivity via Websockets with fallback to server-sent events or long polling ([here](https://stackoverflow.com/a/12855533/871146) is a good post on the differences), but it abstracts it all away using the concept of a "hub". Clients connect to the hub and they can call methods on it or the server can call methods on the client - it's a two way connection. Additionally we can implement streaming from the server to the client or vice versa.
+We've discussed how peering is intended to work, so let's dive into the implementation details for peering using SignalR. Out of the box SignalR provides connectivity via Websockets with fallback to server-sent events or long polling ([here](https://stackoverflow.com/a/12855533/871146) is a good post on the differences between the transports), but it abstracts it all away using the concept of a "hub". Clients connect to the hub and they can call methods on it or the server can call methods on the client - it's a two way connection. Additionally we can implement [streaming](https://docs.microsoft.com/en-us/aspnet/core/signalr/streaming?view=aspnetcore-5.0) from the server to the client or vice versa.
 
 There are some restrictions on the server calling the client - notably that the client is unable to return a response to the server. However, by implementing bi-directional streaming, we can layer a fully async request/response mechanism on top of SignalR's streaming capablities. Consider a hub with the following [method](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Cli/Hubs/AirDropHub.cs#L52):
 
@@ -155,11 +155,11 @@ This allows the server to send messages to the client (via the returned `IAsyncE
 
 When a client connects to the hub it calls `StreamAsync` and the server spins up a thread that is responsible for processing messages from the client's `IAsyncEnumerable`. It uses a [`Channel<T>`](https://devblogs.microsoft.com/dotnet/an-introduction-to-system-threading-channels/) as the "queue" of messages produced by the server - as messages are posted to the `Channel<T>` they are yielded to SignalR which sends them over the connection to the client.
 
-#### Callbacks
+### Callbacks
 
-Under the hood the `T` used in our `Channel<T>` is actually a struct called `MessageWithCallback` that contains an `AirDropHubMessage` and an optional callback that is called if the message is in response to another message. Callbacks are handled by implementing `IValueTaskSource` - this is the `ValueTask` equivalent of using `TaskCompletionSource` and allows consumers of our SignalR implementation of `AirDropPeer` to `await` the result of an operation, even though that result is happening asynchronously from our underlying stream. We keep track of the callback by storing a message's unique identifier and its the `IValueTaskSource` representing the callback in a `Dictionary` associated with the connection. When a message is received from the client we check to see if the `ReplyTo` property value is in that `Dictionary` and, if so, we call the callback with the message from the client.
+Under the hood the `T` used in our `Channel<T>` is actually a struct called `MessageWithCallback` that contains an `AirDropHubMessage` and an optional callback that is called if the message is in response to another message. Callbacks are handled by implementing `IValueTaskSource` - this is the `ValueTask` equivalent of using `TaskCompletionSource` and allows consumers of our SignalR implementation of `AirDropPeer` to `await` the result of an operation, even though that result is happening asynchronously on another thread (the one handling messages from the client). We keep track of the callback by storing a message's unique identifier and the `IValueTaskSource` representing the callback in a `Dictionary` associated with the connection. When a message is received from the client we check to see if the `ReplyTo` property value is in that `Dictionary` and, if so, we invoke the callback with the message from the client.
 
-`IValueTaskSource` is relatively easy to implement - there's a struct in the runtime that implements the majority of its logic called `ManualResetValueTaskSourceCore<T>` so our implementation, called [`CallbackValueTaskSource`](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Cli/Hubs/AirDropHub.cs#L190), simply wraps it:
+`IValueTaskSource` is relatively easy to implement, there's a struct in the runtime that implements the majority of its logic called `ManualResetValueTaskSourceCore<T>`, so our implementation, called [`CallbackValueTaskSource`](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Cli/Hubs/AirDropHub.cs#L190), simply wraps it:
 
 ```c#
 /// <summary>
@@ -170,7 +170,7 @@ Under the hood the `T` used in our `Channel<T>` is actually a struct called `Mes
 /// </summary>
 private class CallbackValueTaskSource : IValueTaskSource<AirDropHubMessage>
 {
-    private ManualResetValueTaskSourceCore<AirDropHubMessage> _valueTaskSource; // mutable struct; do not make this readonly
+    private ManualResetValueTaskSourceCore<AirDropHubMessage> _valueTaskSource;
 
     public void SetResult(AirDropHubMessage message) => _valueTaskSource.SetResult(message);
     
@@ -191,7 +191,7 @@ private class CallbackValueTaskSource : IValueTaskSource<AirDropHubMessage>
 
 When a reply message is received, and we've found a callback, we simply call `SetResult(AirDropHubMessage)` with the message. If a caller was `await`ing a `ValueTask` that wraps the `IValueTaskSource` it'll resume execution.
 
-It's important to note the `Reset` method on this class - in order to minimise allocations we use an `ObjectPool` to keep a few instances of the class around. When we want an instance we call `ObjectPool.Get()` to get one, use it and then return it to the pool when we're done. `Reset` allows us to re-use that instance later.
+It's important to note the `Reset` method on this class - in order to minimise allocations we use an [`ObjectPool`(https://docs.microsoft.com/en-us/aspnet/core/performance/objectpool?view=aspnetcore-5.0) to keep a few instances of the class around for re-use. When we want an instance we call `ObjectPool.Get()` to get one, use it and then return it to the pool when we're done. `Reset` allows us to safely re-use that instance later.
 
 That's a lot of words! Let's take a look at how that works when implemented in the SignalR peer (note: code has been delibrately simplified for the post):
 
@@ -238,11 +238,11 @@ public ValueTask<bool> CanAcceptFilesAsync(AskRequest askRequest)
 }
 ```
 
-This might seem a little convoluted but it allows us to have pretty useful request/response implementation over the top of a full duplex stream between our server and client. Importantly, the core pieces don't need to know _any_ details on how messages are relayed to the peer, they just `await` the call.
+This might seem a little convoluted but it allows us to have a pretty useful request/response implementation over the top of a full duplex stream between our server and client. Importantly, the core pieces don't need to know _any_ details on how messages are relayed to the peer, they just `await` the call.
 
-#### Polymorphic Messages
+### Polymorphic Messages
 
-By default SignalR uses `System.Text.Json` to serialize/deserialize messages across the wire. Usually that works just fine but here we're using bi-directional streaming with the abstract base class `AirDropHubMessage`. `System.Text.Json` has no idea how it should handle derivatives of this type so we need to give it a helping hand - enter [`PolymorphicJsonConverter`](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Cli/Hubs/PolymorphicJsonConverter.cs#L15). This `JsonConverter` reads and writes JSON associated with the _concrete_ type of the object but wraps it in a named field so that it knows what runtime `Type` to deserialize to. We then add attributes to `AirDropHubMessage` that instruct the converter of the mappings it should handle:
+By default SignalR uses `System.Text.Json` to serialize/deserialize messages across the wire. Usually that works just fine but here we're using bi-directional streaming with the abstract base class `AirDropHubMessage`. `System.Text.Json` has no idea how it should handle derivatives of this type so we need to give it a helping hand - enter [`PolymorphicJsonConverter`](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Cli/Hubs/PolymorphicJsonConverter.cs#L15). This `JsonConverter` reads and writes JSON associated with the _concrete_ type of the object but wraps it in a named field so that it knows what runtime `Type` to deserialize to. We then add attributes to `AirDropHubMessage` that teach the converter which mappings it should handle:
 
 ```c#
 [PolymorphicJsonInclude("connect", typeof(ConnectMessage))]
@@ -271,32 +271,32 @@ When serialized the JSON looks like this:
 }
 ```
 
-When deserializing the `connect` key instructs the converter to use `ConnectMessage` when deserializing. This lets us maintain our simple streaming signature using `IAsyncEnumerable<AirDropHubMessage>` but allows us to pass any derived type to and from the connected parties.
+When deserializing the `connect` key is used to lookup the right runtime type for the message - in this case `ConnectMessage` is used. This lets us maintain our simple streaming signature using `IAsyncEnumerable<AirDropHubMessage>` but allows us to pass any derived type to and from the connected parties.
 
-## Uploading files
+## Uploading files
 
 I mentioned above that our previous implementation of AirDrop's `/Upload` API just extracted files to the server's file system. Now that we can relay things to a peer we can forward arrays of bytes representing chunks of a file to them directly, yay! Unfortunately the story doesn't end there - if we connect to our SignalR server using a browser then our options for handling the array of bytes are somewhat limited - we need to construct a `Blob` and once we have all the chunks we can use some creative hacks to get the browser to trigger a "download" to the user's local machine. Except that we've already sent the bytes to the client so, in the case of large files, it's quite possible that the `Blob` is backed by memory or temporarily buffered somewhere else, likely with some kind of limits to prevent abuse.
 
 Instead I've added a `StaticFileProvider` to the Kestrel instance spun up in the `AirDropAnywhere.Cli` server instance that maps to an `uploads` directory on the server. When we extract uploaded archives we generate a new directory here and new files are added to it. Once the archive is extracted we notify the client of each file that was extracted and its corresponding URL on the server - once the client has successfully downloaded all the files it needs then those files are removed from the server.
 
-This allows us to stream the files directly to the client's browser without any unnecessary buffering along the way.
+This allows us to stream the files directly to the client's browser without any unnecessary buffering along the way - it's a trade-off - we're expecting the server to have storage space to extract any archives sent its way but we can rely on the client's ability to download things directly rather than using semi-supported workarounds with `Blob` and `File` in the browser.
 
 ## Glueing it all together
 
 Now we have a (relatively) sane approach to peering we can implement our first consumer. This first consumer will run at the command line and it'll perform the following steps:
 
 1. Connect to an AirDrop Anywhere server using SignalR and immediately send a `ConnectMessage` containing the peer's name.
-    1. Once connected the server will announce the peer over mDNS
-    1. AirDrop will discover the peer via this announcement and call `/Discover`
-1. Wait for a `CanAcceptFileRequestMessage` from the server. This is sent when a contact is tapped in the AirDrop UI, triggering a call to the `/Ask` API.
-    1. Once received, display a prompt to the user asking if they want to accept the files being sent.
-    1. If they hit, _Yes_ then continue, otherwise go to 2. Either way, return the response as a `CanAcceptFileResponseMessage` so the server knows to continue.
+    1. Once connected the server will announce the peer over mDNS.
+    1. AirDrop will discover the peer via this announcement and call the `/Discover` API over HTTPS.
+1. Wait for a `CanAcceptFileRequestMessage` from the server. This is sent when a contact is tapped in the AirDrop UI, triggering a call to the `/Ask` API over HTTPS.
+    1. Once received, the CLI displays a prompt to the user asking if they want to accept the files being sent.
+    1. If they hit, _Yes_ then continue, otherwise go to 2. Either way, return the response as a `CanAcceptFileResponseMessage` so the server knows to how to continue.
 1. For each file, receive a `FileUploadedRequestMessage` and use the URL within it to download the file from the server.
-    1. Once the file is downloaded, send a `FileUploadedResponseMessage` to acknowledge receipt
+    1. Once the file is downloaded, send a `FileUploadedResponseMessage` to acknowledge receipt.
 
 All of this logic is wrapped up in [`ClientCommand`](https://github.com/deanward81/AirDropAnywhere/blob/2021-06-14-cross-platform-bits/src/AirDropAnywhere.Cli/Commands/ClientCommand.cs) in the `AirDropAywhere.Cli` project. This makes use of [Spectre.Console](https://github.com/spectreconsole/spectre.console)'s wide array of formatting options to render the prompt and show output from the file download process.
 
-There isn't anything particularly "magic" in this implementation - it is a simple SignalR client that renders some UI and uses an `HttpClient` to download files. The only quirks are ensuring that we ignore certificate validation errors when connecting over HTTPS for downloads or with SignalR - when running on a different machine the default ASP.NET development certificate is not trusted and therefore fails validation. Eventually I'll implement a certificate generator and change the validation to ensure the certificate is generated from a specific root to eliminate the risk of MITM attacks.
+There isn't anything particularly "magic" in this implementation - it is a simple SignalR client that renders some UI and uses an `HttpClient` to download files. The only quirks are ensuring that we ignore certificate validation errors when connecting over HTTPS for downloads or with SignalR - when running on a different machine the default ASP.NET development certificate is not trusted and therefore fails validation. Eventually I'll implement a certificate generator and change the validation to ensure the certificate is generated from a specific well-known root to eliminate the risk of MITM attacks.
 
 We should be able to take the same structure used here and trivially apply it to a client implemented in JS or Blazor running entirely in the browser.
 
@@ -304,4 +304,6 @@ We should be able to take the same structure used here and trivially apply it to
 
 Next up, I'll be implementing the client to have all of this running entirely in the browser. I've put together a list of things I plan to work on over the coming weeks in a [GitHub project in the AirDropAnywhere repo](https://github.com/deanward81/AirDropAnywhere/projects/1).
 
-By the end of all this I intend to have an executable that can be run on any device supporting AWDL or OWL (Apple or Linux with an RFMON-supporting wifi interface) as a daemon providing AirDrop services to a home network (I suspect this wouldn't scale to anything larger than that 🤔). Additionally I'd like to have `AirDropAnywhere.Core` published as a NuGet package that would allow AirDrop to be consumed by things like GUI applications, allowing arbitrary files to be "dropped" to any application on any platform!
+I'll likely be moving the project to use .NET 6 in the very near future. In my last post I [detailed a workaround](/posts/2021-05-airdrop-anywhere-part-3#AwdlSocketTransportFactory) for allowing Kestrel to accept connections on the `awdl0` interface by adjusting the listen socket's options. Thanks to [Sourabh Shirhatti](https://github.com/shirhatti) at Microsoft an [issue](https://github.com/dotnet/aspnetcore/issues/32794) was created in the ASP.NET Core repo and I was able to [add support](https://github.com/dotnet/aspnetcore/pull/32827) for customising the creation of Kestrel's listen sockets directly to ASP.NET - this eliminates the need for my workaround altogether 🎉!
+
+The end goal of all of this is to publish an executable that can be run on any device supporting AWDL or OWL (Apple or Linux with an RFMON-supporting wireless interface) as a daemon providing AirDrop services to a home network (I suspect this wouldn't scale to anything larger than that 🤔). Additionally I'd like to have `AirDropAnywhere.Core` published as a NuGet package that would allow AirDrop to be consumed by things like GUI applications, potentially allowing arbitrary files to be "dropped" to any application on any (supported) platform! Stay tuned!
