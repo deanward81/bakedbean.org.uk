@@ -1,6 +1,6 @@
 ---
 title: "AirDrop Anywhere - Part 4 - Making it work on Windows"
-date: 2021-06-14T16:00:00Z
+date: 2021-06-14T17:20:00Z
 tags: [.net, networking, airdrop, apple]
 images: [img/airdrop-anywhere-cover.jpg]
 summary: "Part four of the journey towards implementing AirDrop on any platform using .NET Core. This episode we cover receiving files on a non-Apple device from an Apple device via an intermediary using .NET."
