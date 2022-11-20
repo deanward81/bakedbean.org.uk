@@ -33,6 +33,11 @@ unsafe= true
     weight = 3
     url = "https://twitter.com/deanward81/"
 [[params.social]]
+    name = "Mastodon"
+    icon = "icon-mastodon icon-2x"
+    weight = 3
+    url = "https://infosec.exchange/@deanward"
+[[params.social]]
     name = "Stack Overflow"
     icon = "icon-stack-overflow icon-2x"
     weight = 3
