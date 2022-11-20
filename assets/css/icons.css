@@ -28,21 +28,24 @@
       font-size: 2em;
   }
   .icon-twitter:before {
-    content: "\f099";
+    content: "\ea96";
+  }
+  .icon-mastodon:before {
+    content: "\e900";
   }
   .icon-github:before {
-    content: "\f09b";
+    content: "\eab0";
   }
   .icon-bars:before {
-    content: "\f0c9";
+    content: "\e901";
   }
   .icon-navicon:before {
-    content: "\f0c9";
+    content: "\e901";
   }
   .icon-reorder:before {
-    content: "\f0c9";
+    content: "\e901";
   }
   .icon-stack-overflow:before {
-    content: "\f16c";
+    content: "\ead0";
   }
   
