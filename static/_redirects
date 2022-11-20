@@ -1,3 +1,4 @@
 # Redirect domain aliases to primary domain
 https://bakedbean.me/* https://bakedbean.org.uk/:splat 301!
-/.well-known/webfinger?resource=acct:dean@bakedbean.org.uk https://infosec.exchange/.well-known/webfinger?resource=acct:deanward@infosec.exchange 200
+# Redirect Mastodon to the right place
+/.well-known/webfinger https://infosec.exchange/.well-known/webfinger?resource=acct:deanward@infosec.exchange 301!
