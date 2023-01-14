@@ -36,7 +36,7 @@ unsafe= true
     name = "Mastodon"
     icon = "icon-mastodon icon-2x"
     weight = 3
-    url = "https://infosec.exchange/@deanward"
+    url = "https://hachyderm.io/@deanward"
 [[params.social]]
     name = "Stack Overflow"
     icon = "icon-stack-overflow icon-2x"
