@@ -9,7 +9,7 @@ pygmentsCodeFencesGuessSyntax = true
 pygmentsOptions = "linenos=true"
 enableEmoji = true
 
-googleAnalytics = "UA-34429122-1"
+googleAnalytics = "G-VZ570EVS20"
 disqusShortname = "bakedbean-org-uk"
 
 [markup.goldmark.renderer]
